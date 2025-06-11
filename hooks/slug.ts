@@ -1,6 +1,6 @@
 import slugify from "slugify";
 
-export default function slug(data: string): string {
+export default function Slug(data: string): string {
   try {
     return slugify(data, {
       replacement: "-",

@@ -12,6 +12,8 @@ import BlogCategory from "../../../../components/category";
 import type { Blog } from "@/types/blog";
 import BlogRecentPost from "../components/blog-recent-post";
 import BreadcrumbComponent from "@/components/breadcrumb";
+import { Comment } from "@/types/comment";
+import { ClockFading } from "lucide-react";
 
 const tags = [
   "Kinh doanh",
@@ -23,45 +25,54 @@ const tags = [
   "Chủ đề",
 ];
 
-async function getBlogPost(slug: string, token: string): Promise<Blog> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/blogs/get-by-slug?slug=${slug}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Oops");
+async function getBlogPost(slug: string): Promise<Blog> {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/blogs/get-by-slug?slug=${slug}`,
+      {
+        method: "get",
+      }
+    );
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error(error);
   }
-  const data = await response.json();
-  console.log(data);
-  return data;
 }
 
+async function getComment(slug: string): Promise<Comment> {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/comments/?slug=${slug}`,
+      {
+        method: "get",
+      }
+    );
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+  }
+}
 export default function Page({ params }: { params: { slug: string } }) {
   const { slug } = use(params);
   const [blog, setBlog] = useState<Blog | null>(null);
+  const [comment, setComment] = useState<Comment | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      setError("No access token found");
-      setLoading(false);
-      return;
-    }
-
     const fetchData = async () => {
       try {
-        const [blogData] = await Promise.all([getBlogPost(slug, token)]);
+        const [blogData, commentData] = await Promise.all([
+          getBlogPost(slug),
+          getComment(slug),
+        ]);
         setBlog(blogData);
-      } catch (err) {
-        console.error(err);
+        setComment(commentData);
+        console.log(commentData);
+      } catch (error) {
+        console.error(error);
         setError("err");
       } finally {
         setLoading(false);
@@ -89,7 +100,11 @@ export default function Page({ params }: { params: { slug: string } }) {
         title="Về chúng tôi"
         breadcrumbs={[
           { label: "Trang chủ", href: "/" },
-          { label: "Về chúng tôi" },
+          {
+            label: blog.categories[0]?.name ?? "",
+            href: `/blog/category/${blog.categories[0]?.slug ?? ""}`,
+          },
+          { label: blog.title },
         ]}
       />
       <div className="grid grid-cols-8 gap-4 px-7.5">
@@ -98,7 +113,7 @@ export default function Page({ params }: { params: { slug: string } }) {
             {blog.categories.map((p, i) => (
               <Button
                 key={i}
-                className="bg-[#a8b324] hover:bg-[#80891b] mb-3.5 max-h-6"
+                className="bg-[#a8b324] hover:bg-[#80891b] mb-3.5 max-h-6 mr-2"
               >
                 <Link href={`category/${p.slug}`}>{p.name}</Link>
               </Button>
@@ -167,12 +182,118 @@ export default function Page({ params }: { params: { slug: string } }) {
               </div>
             </div>
           </article>
+          <Separator className="my-5" />
+          <div className="flex justify-between">
+            <Link href={blog.pre.slug} className="group">
+              <div className="flex items-center ">
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/${blog.pre.image}`}
+                  width={120}
+                  height={120}
+                  alt={blog.pre.title}
+                  className="mr-5"
+                />
+                <div>
+                  <h2>Trước</h2>
+                  <p className="group-hover:text-yellow-500">
+                    {blog.pre.title}
+                  </p>
+                </div>
+              </div>
+            </Link>
+            <Link href={blog.next.slug} className="group">
+              <div className="flex items-center ">
+                <div>
+                  <h2>Sau</h2>
+                  <p className="group-hover:text-yellow-500">
+                    {blog.next.title}
+                  </p>
+                </div>
+                <Image
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/${blog.next.image}`}
+                  width={120}
+                  height={120}
+                  alt={blog.next.title}
+                  className="ml-5"
+                />
+              </div>
+            </Link>
+          </div>
+          <Separator className="my-5" />
+          <div>
+            <h2 className="font-bold text-green-800 py-5">
+              {blog.comment_count} bình luận
+            </h2>
+
+            {comment?.map((p, i) => (
+              <div key={i}>
+                <div className="flex">
+                  <div className="mr-2">
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/${p.users.image}`}
+                      alt={p.users.name}
+                      width={75}
+                      height={75}
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center">
+                      <h2 className="pr-5">{p.users.name}</h2>
+                      <p className="text-gray-300">
+                        {FormatDate(p.created_at)}
+                      </p>
+                    </div>
+                    <p className="py-2">{p.content}</p>
+                    <Button
+                      variant="ghost"
+                      className="hover: cursor-pointer hover:bg-white text-yellow-600 hover:text-yellow-600"
+                    >
+                      Trả lời
+                    </Button>
+                  </div>
+                </div>
+                <Separator className="my-5" />
+                {p.other_comments && (
+                  <div className="reply-comment pl-10">
+                    {p.other_comments.map((p1, i) => (
+                      <div key={i} className="flex">
+                        <div className="mr-2">
+                          <Image
+                            src={`${process.env.NEXT_PUBLIC_API_URL}/${p1.users.image}`}
+                            alt={p1.users.name}
+                            width={75}
+                            height={75}
+                            className="rounded-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-4">
+                            <h2>{p1.users.name}</h2>
+                            <p className="text-gray-300">
+                              {FormatDate(p1.created_at)}
+                            </p>
+                          </div>
+                          <p>{p1.content}</p>
+                          <Button
+                            variant="ghost"
+                            className="hover:cursor-pointer hover:bg-white text-yellow-600 hover:text-yellow-600"
+                          >
+                            Trả lời
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
         <div className="col-span-2 col-start-7">
           <SearchForm />
-          <BlogCategory />
+          <BlogCategory title="Danh mục" url="category" />
           <BlogRecentPost />
-          <BlogTag tags={tags} />
+          <BlogTag title="Thẻ" url="tag" tags={tags} />
         </div>
       </div>
     </>

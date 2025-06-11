@@ -28,13 +28,13 @@ import { DataTableViewOptions } from "../components/data-table-view-options";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import ProductForm from "./product-form";
-import { useUser } from "@/context/user-context";
+import UserForm from "./user-form";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -52,7 +52,6 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const { user, accessToken } = useUser();
 
   const table = useReactTable({
     data,
@@ -100,9 +99,10 @@ export function DataTable<TData, TValue>({
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle></DialogTitle>
+                <DialogDescription></DialogDescription>
               </DialogHeader>
-              <ProductForm
-                url={`${process.env.NEXT_PUBLIC_API_URL}/products/create`}
+              <UserForm
+                url={`${process.env.NEXT_PUBLIC_API_URL}/users/create`}
               />
             </DialogContent>
           </Dialog>

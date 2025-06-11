@@ -14,20 +14,15 @@ type Category = {
   title: string;
 };
 
-async function fetchCategories(): Promise<CategoryData[]> {
+async function getCategories(): Promise<CategoryData[]> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/blogs/categories`
     );
-
-    if (!res.ok) {
-      throw new Error(`${res.status} ${res.statusText}`);
-    }
-
     const data: CategoryData[] = await res.json();
     return data;
-  } catch (err) {
-    console.error("Error fetching categories:", err);
+  } catch (error) {
+    console.error(error);
     return [];
   }
 }
@@ -37,7 +32,7 @@ export default function BlogCategory({ title, url }: Category) {
 
   useEffect(() => {
     const load = async () => {
-      const data = await fetchCategories();
+      const data = await getCategories();
       setCategories(data);
     };
     load();

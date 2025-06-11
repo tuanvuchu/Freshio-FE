@@ -7,7 +7,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Liên hệ - U Food",
-  description: "...",
+  description:
+    "Liên hệ với U Food để được hỗ trợ nhanh chóng về đơn hàng, sản phẩm, hoặc bất kỳ thắc mắc nào.",
 };
 
 export default function ContactUs() {
@@ -22,7 +23,7 @@ export default function ContactUs() {
         ]}
       />
       <div
-        className="grid grid-cols-5  gap-4 pt-16"
+        className="grid grid-cols-5 gap-4 pt-5"
         style={{ fontFamily: "Mazzard Soft H" }}
       >
         <div className="col-span-2 grid justify-items-center">

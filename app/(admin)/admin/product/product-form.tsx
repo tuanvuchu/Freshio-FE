@@ -13,9 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useState } from "react";
+import { useUser } from "@/context/user-context";
 
 type ProductFormProps = {
-  product: {
+  url: string;
+  product?: {
     id: string;
     image: string;
     name: string;
@@ -40,19 +42,20 @@ type ProductFormValues = {
   image: string;
 };
 
-export default function ProductForm({ product }: ProductFormProps) {
-  const [imageUrl, setImageUrl] = useState(product.image);
+export default function ProductForm({ url, product }: ProductFormProps) {
+  const { accessToken } = useUser();
 
+  const [imageUrl, setImageUrl] = useState(product?.image ?? "");
   const form = useForm<ProductFormValues>({
     defaultValues: {
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      unit: product.unit,
-      quantity: product.quantity,
-      weight: product.additional_information.weight,
-      image: product.image,
+      id: product?.id ?? "",
+      name: product?.name ?? "",
+      description: product?.description ?? "",
+      price: product?.price ?? 0,
+      unit: product?.unit ?? "",
+      quantity: product?.quantity ?? 0,
+      weight: product?.additional_information?.weight ?? "",
+      image: product?.image ?? "",
     },
   });
 
@@ -63,14 +66,28 @@ export default function ProductForm({ product }: ProductFormProps) {
         price: Number(data.price),
         quantity: Number(data.quantity),
       };
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/products/update/${payload.id}`,
-        {
-          method: "post",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await res.json();
+      if (url.includes("/create")) {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            tag_id: "c6b188d3-1de9-48ac-8a5b-537cbb37dd95",
+            product_id: result.id,
+          }),
+        });
+      }
     } catch (error) {
       console.error(error);
     }

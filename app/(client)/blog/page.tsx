@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
@@ -35,16 +34,17 @@ type Blog = {
 };
 
 async function getBlogs(current: number): Promise<Blog> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/blogs/get-all?current=${current}&pageSize=10`,
-    {
-      method: "GET",
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Failed to fetch blogs");
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/blogs/get-all?current=${current}&pageSize=10`,
+      {
+        method: "GET",
+      }
+    );
+    return response.json();
+  } catch (error) {
+    console.error(error);
   }
-  return response.json();
 }
 
 const tags = [
@@ -73,8 +73,8 @@ export default function Blog() {
         const [blogData] = await Promise.all([getBlogs(currentPage)]);
         setBlogs(blogData.items);
         setTotalPages(blogData.totalPages);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(error);
         setError("Failed to load data");
       } finally {
         setLoading(false);
@@ -89,11 +89,11 @@ export default function Blog() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Đang tải...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>{error}</div>;
   }
 
   return (
@@ -163,7 +163,7 @@ export default function Blog() {
               </div>
             </article>
           ))}
-          <Pagination>
+          <Pagination className="pb-10">
             <PaginationContent>
               <PaginationItem>
                 <PaginationPrevious

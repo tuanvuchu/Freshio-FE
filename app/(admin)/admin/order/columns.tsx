@@ -8,17 +8,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -28,8 +18,15 @@ import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../components/data-table-column-header";
 import { useState } from "react";
 import { FormatCurrency } from "@/hooks/format-currency";
-import { FormatDate } from "@/hooks/format-date";
-import { MoreHorizontal } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { AlertDialogHeader } from "@/components/ui/alert-dialog";
+import OrderDetail from "./order-detail";
+import { useUser } from "@/context/user-context";
 
 export type Order = {
   id: string;
@@ -54,24 +51,47 @@ const statuses: Status[] = [
   { value: "canceled", label: "Đã hủy" },
 ];
 
-// Component hiển thị status và popover chọn status
-const StatusCell = ({ initialStatus }: { initialStatus: string }) => {
+type StatusCellProps = {
+  initialStatus: string;
+  order: Order;
+};
+
+const StatusCell = ({ initialStatus, order }: StatusCellProps) => {
+  const { accessToken } = useUser();
+
   const [open, setOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(
     statuses.find((s) => s.value === initialStatus) || null
   );
 
+  const updateStatusApi = async (orderId: string, newStatus: string) => {
+    try {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/orders/${orderId}/status`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="flex items-center space-x-4">
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant="outline" className="w-[150px] justify-start">
+          <Button variant="outline" className="justify-start">
             {selectedStatus ? selectedStatus.label : "Trạng thái"}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="p-0" side="right" align="start">
           <Command>
-            <CommandInput placeholder="Change status..." />
+            <CommandInput placeholder="Trạng thái..." />
             <CommandList>
               <CommandGroup>
                 {statuses.map((status) => (
@@ -79,6 +99,7 @@ const StatusCell = ({ initialStatus }: { initialStatus: string }) => {
                     key={status.value}
                     value={status.value}
                     onSelect={(value) => {
+                      updateStatusApi(order.id, value);
                       setSelectedStatus(
                         statuses.find((s) => s.value === value) || null
                       );
@@ -127,11 +148,13 @@ export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: "status",
     header: "Trạng thái",
-    cell: ({ row }) => <StatusCell initialStatus={row.getValue("status")} />,
+    cell: ({ row }) => (
+      <StatusCell initialStatus={row.getValue("status")} order={row.original} />
+    ),
   },
   {
     accessorKey: "payment_method",
-    header: "Phương thức thanh toán",
+    header: "Phương thức",
   },
   {
     accessorKey: "note",
@@ -140,9 +163,6 @@ export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: "created_at",
     header: "Ngày đặt",
-    // cell: ({ row }) => {
-    //   FormatDate(new Date(row.original.created_at));
-    // },
   },
   {
     id: "actions",
@@ -150,17 +170,19 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => {
       const payment = row.original;
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>Xem chi tiết </DropdownMenuItem>
-            <DropdownMenuItem>Xóa</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline">Xem chi tiết</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <AlertDialogHeader>
+                <DialogTitle></DialogTitle>
+              </AlertDialogHeader>
+              <OrderDetail id={payment.id} />
+            </DialogContent>
+          </Dialog>
+        </>
       );
     },
   },

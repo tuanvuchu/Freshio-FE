@@ -24,7 +24,7 @@ async function getData(accessToken: string): Promise<Product[]> {
   }
 }
 
-export default function DemoPage() {
+export default function Product() {
   const { accessToken } = useUser();
   const [data, setData] = useState<Product[]>([]);
 

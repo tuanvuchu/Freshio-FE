@@ -20,13 +20,13 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import SearchForm from "./search-form";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarImage } from "./ui/avatar";
 import { useUser } from "@/context/user-context";
 import { useEffect, useState } from "react";
 
-async function cartCount(user_id: string, accessToken: string) {
+export async function cartCount(user_id: string, accessToken: string) {
   try {
-    const response = await fetch(
+    const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/carts/?user_id=${user_id}`,
       {
         method: "GET",
@@ -36,7 +36,7 @@ async function cartCount(user_id: string, accessToken: string) {
         },
       }
     );
-    const data = await response.json();
+    const data = await res.json();
     return data;
   } catch (error) {
     console.log(error);

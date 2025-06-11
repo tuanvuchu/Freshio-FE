@@ -2,10 +2,12 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,23 +24,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { DataTableColumnHeader } from "../components/data-table-column-header";
 import Image from "next/image";
-import { FormatCurrency } from "@/hooks/format-currency";
-import ProductForm from "./product-form";
+import UserForm from "./user-form";
 
-export type Product = {
+export type User = {
   id: string;
-  image: string;
   name: string;
-  description: string;
-  additional_information: {
-    weight: string;
-  };
-  price: number;
-  unit: string;
-  quantity: number;
+  email: string;
+  password: string;
+  phone: number;
+  address: string;
+  image: string;
+  account_type: string;
+  is_actived: string;
 };
 
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<User>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -60,6 +60,25 @@ export const columns: ColumnDef<Product>[] = [
     ),
   },
   {
+    accessorKey: "name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Tên" />
+    ),
+  },
+
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "phone",
+    header: "SĐT",
+  },
+  {
+    accessorKey: "address",
+    header: "Địa chỉ",
+  },
+  {
     accessorKey: "image",
     header: "Hình ảnh",
     cell: ({ row }) => {
@@ -78,48 +97,17 @@ export const columns: ColumnDef<Product>[] = [
     },
   },
   {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Tên" />
-    ),
+    accessorKey: "account_type",
+    header: "Loại",
   },
   {
-    accessorKey: "description",
-    header: "Mô tả",
-  },
-  {
-    accessorKey: "price",
-    header: "Giá",
-    cell: ({ row }) => {
-      return (
-        <div>
-          {FormatCurrency(row.original.price)}/{row.original.unit}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "additional_information",
-    header: "Thông tin bổ sung",
-    cell: ({ row }) => {
-      const info = row.original.additional_information;
-      if (!info || typeof info !== "object") return "-";
-      return (
-        <div className="space-y-1">
-          {Object.entries(info).map(([key, value]) => (
-            <div key={key}>
-              <span className="font-medium">{key}: </span>
-              <span>{String(value)}</span>
-            </div>
-          ))}
-        </div>
-      );
-    },
+    accessorKey: "is_actived",
+    header: "Kích hoạt",
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      const product = row.original;
+      const user = row.original;
       return (
         <>
           <Dialog>
@@ -129,10 +117,11 @@ export const columns: ColumnDef<Product>[] = [
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle></DialogTitle>
+                <DialogDescription></DialogDescription>
               </DialogHeader>
-              <ProductForm
-                url={`${process.env.NEXT_PUBLIC_API_URL}/products/update/${product.id}`}
-                product={product}
+              <UserForm
+                url={`${process.env.NEXT_PUBLIC_API_URL}/users/update`}
+                user={user}
               />
             </DialogContent>
           </Dialog>
@@ -155,7 +144,7 @@ export const columns: ColumnDef<Product>[] = [
                   onClick={async () => {
                     try {
                       await fetch(
-                        `${process.env.NEXT_PUBLIC_API_URL}/products/delete/${product.id}`,
+                        `${process.env.NEXT_PUBLIC_API_URL}/users/delete/${user.id}`,
                         {
                           method: "delete",
                         }

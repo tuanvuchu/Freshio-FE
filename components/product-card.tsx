@@ -18,57 +18,58 @@ interface AddCartItemDto {
   quantity: number;
 }
 
-export default function ProductCardComponent({ product }: ProductProps) {
-  const { user, accessToken } = useUser();
-  async function addToCart(
-    user_id: string,
-    item: AddCartItemDto
-  ): Promise<void> {
-    try {
-      const resCarts = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/carts`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      const carts = await resCarts.json();
-      let cart = carts.find((c: any) => c.user_id === user_id);
-
-      if (!cart) {
-        const resCreate = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/carts`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({ user_id }),
-          }
-        );
-
-        if (!resCreate.ok) throw new Error("Không thể tạo giỏ hàng");
-        cart = await resCreate.json();
-      }
-      const resAddItem = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/carts/${cart.id}/items`,
+export async function addToCart(
+  accessToken: string,
+  user_id: string,
+  item: AddCartItemDto
+): Promise<void> {
+  try {
+    const resCarts = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/carts`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const carts = await resCarts.json();
+    let cart = carts.find((c: any) => c.user_id === user_id);
+    if (!cart) {
+      const resCreate = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/carts`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-          body: JSON.stringify({
-            product_id: item.product_id,
-            quantity: item.quantity,
-          }),
+          body: JSON.stringify({ user_id }),
         }
       );
-      if (!resAddItem.ok) throw new Error("Không thể thêm sản phẩm vào giỏ");
-      toast("Đã thêm");
-    } catch (error) {
-      console.error(error);
+
+      if (!resCreate.ok) throw new Error("Không thể tạo giỏ hàng");
+      cart = await resCreate.json();
     }
+    const resAddItem = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/carts/${cart.id}/items`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          product_id: item.product_id,
+          quantity: item.quantity,
+        }),
+      }
+    );
+    if (!resAddItem.ok) throw new Error("Không thể thêm sản phẩm vào giỏ");
+    toast("Đã thêm");
+  } catch (error) {
+    console.error(error);
   }
+}
+
+export default function ProductCardComponent({ product }: ProductProps) {
+  const { user, accessToken } = useUser();
   return (
     <Card className="group/product size-fit shadow-none text-center items-center">
       <CardContent className=" p-0">
@@ -120,7 +121,7 @@ export default function ProductCardComponent({ product }: ProductProps) {
           variant="ghost"
           className="hover:text-[#a8b324] hover:bg-white hover:cursor-pointer"
           onClick={() =>
-            addToCart(user.id, {
+            addToCart(accessToken, user.id, {
               product_id: product.id,
               quantity: 1,
             })

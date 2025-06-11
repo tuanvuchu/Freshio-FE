@@ -26,13 +26,8 @@ import {
 } from "@/components/ui/sidebar";
 
 const data = {
-  user: {
-    name: "admin",
-    email: "admin@gmail.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
-    { title: "Dashboard", url: "/admin/dashboard", icon: IconDashboard },
+    { title: "Dashboard", url: "/admin", icon: IconDashboard },
     { title: "Sản phẩm", url: "/admin/product", icon: IconListDetails },
     { title: "Người dùng", url: "/admin/user", icon: IconChartBar },
     { title: "Đơn hàng", url: "/admin/order", icon: IconTruckDelivery },
@@ -80,7 +75,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   );

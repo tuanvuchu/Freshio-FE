@@ -1,41 +1,15 @@
-"use client";
-
 import BreadcrumbComponent from "@/components/breadcrumb";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Autoplay from "embla-carousel-autoplay";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 import Image from "next/image";
 import "@/styles/style.css";
+import CarouselAboutUs from "./carousel";
+import { Metadata } from "next";
 
-type CarouselData = {
-  name: string;
-  role: string;
-  avatar: string;
-  content: string;
+export const metadata: Metadata = {
+  title: "Về chúng tôi - U Food",
+  description:
+    "U Food là thương hiệu tiên phong trong lĩnh vực thực phẩm sạch và tiện lợi, cam kết mang đến bữa ăn chất lượng và an toàn cho mọi gia đình Việt.",
 };
 
-const carouselItems: CarouselData[] = [
-  {
-    name: "Việt Anh",
-    role: "Giám đốc truyền thông",
-    avatar: "/images/avatar-1.jpg",
-    content:
-      "Chúng tôi tin rằng thực phẩm sạch không chỉ là nhu cầu mà còn là quyền của mỗi người. Vì vậy, toàn bộ nông sản trên hệ thống đều có nguồn gốc rõ ràng, được canh tác tự nhiên và không hóa chất.",
-  },
-  {
-    name: "Quốc Anh",
-    role: "Giám đốc sản xuất",
-    avatar: "/images/avatar-2.jpg",
-    content:
-      "Để giảm thiểu rác thải nhựa, chúng tôi triển khai dự án 'Zero Waste' - để bạn có thể chọn nhận hàng bằng túi giấy kraft, hộp bã mía hoặc hũ thủy tinh tái sử dụng. Đây không chỉ là giải pháp, mà là cam kết với môi trường.",
-  },
-];
 export default function AboutUs() {
   return (
     <>
@@ -47,7 +21,7 @@ export default function AboutUs() {
           { label: "Về chúng tôi" },
         ]}
       />
-      <div className="[&>div]:mx-5">
+      <div className="[&>div]:mx-5 pb-15">
         <div className="flex justify-center justify-items-center mt-16.5 mb-7.5">
           <Image
             src="/images/icon1-h8.jpg"
@@ -227,39 +201,7 @@ export default function AboutUs() {
         </div>
         <div className="grid select-none mx-0 mb-20">
           <div className="bg-[url('/images/bg2-h4.jpg')] bg-cover bg-center py-12">
-            <Carousel
-              plugins={[
-                Autoplay({
-                  delay: 5000,
-                }),
-              ]}
-              opts={{
-                loop: true,
-              }}
-              className="max-w-4xl mx-auto"
-            >
-              <CarouselContent>
-                {carouselItems.map((item, index) => (
-                  <CarouselItem key={index}>
-                    <div className="grid grid-rows-3 gap-4 text-center">
-                      <div className="flex justify-center">
-                        <Avatar className="size-[70px]">
-                          <AvatarImage
-                            src={item.avatar}
-                            alt={`@${item.name}`}
-                          />
-                          <AvatarFallback>{item.name}</AvatarFallback>
-                        </Avatar>
-                      </div>
-                      <div>&quot;{item.content}&quot;</div>
-                      <p className="text-[#aaa]">{`${item.name} - ${item.role}`}</p>
-                    </div>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselPrevious className=" hover:bg-[#a8b324] hover:cursor-pointer size-[50]" />
-              <CarouselNext className="hover:bg-[#a8b324] hover:cursor-pointer size-[50]" />
-            </Carousel>
+            <CarouselAboutUs />
           </div>
         </div>
         <div className="grid grid-rows-2">
@@ -283,7 +225,9 @@ export default function AboutUs() {
               height={345}
               alt="Team1"
             />
-            <p className="text-[#03472e] hover:text-[#a8b324] mb-2.5">Tets</p>
+            <p className="text-[#03472e] hover:text-[#a8b324] mb-2.5">
+              Chu Tuấn Vũ
+            </p>
             <p className="text-[#999] pb-4">Nhà sáng lập</p>
           </div>
           <div>
@@ -295,7 +239,9 @@ export default function AboutUs() {
               height={345}
               alt="Team1"
             />
-            <p className="text-[#03472e] hover:text-[#a8b324] mb-2.5">Tets</p>
+            <p className="text-[#03472e] hover:text-[#a8b324] mb-2.5">
+              Chu Tuấn Vũ
+            </p>
             <p className="text-[#999] pb-4">Nông dân</p>
           </div>
           <div>
@@ -307,7 +253,9 @@ export default function AboutUs() {
               height={345}
               alt="Team1"
             />
-            <p className="text-[#03472e] hover:text-[#a8b324] mb-2.5">Tets</p>
+            <p className="text-[#03472e] hover:text-[#a8b324] mb-2.5">
+              Chu Tuấn Vũ
+            </p>
             <p className="text-[#999] pb-4">Nông dân</p>
           </div>
           <div>
@@ -319,7 +267,9 @@ export default function AboutUs() {
               height={345}
               alt="Team1"
             />
-            <p className="text-[#03472e] hover:text-[#a8b324] mb-2.5">Tets</p>
+            <p className="text-[#03472e] hover:text-[#a8b324] mb-2.5">
+              Chu Tuấn Vũ
+            </p>
             <p className="text-[#999] pb-4">Nông dân</p>
           </div>
         </div>

@@ -56,16 +56,17 @@ async function getProduct(
   maxPrice?: number,
   orderBy?: string
 ): Promise<Product> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/products/get?current=${current}&min_price=${minPrice}&max_price=${maxPrice}&orderby=${orderBy}`,
-    {
-      method: "GET",
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Opps");
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/products/get?current=${current}&min_price=${minPrice}&max_price=${maxPrice}&orderby=${orderBy}`,
+      {
+        method: "GET",
+      }
+    );
+    return res.json();
+  } catch (error) {
+    console.error(error);
   }
-  return response.json();
 }
 
 export default function Shop() {
@@ -74,7 +75,6 @@ export default function Shop() {
   const [totalPages, setTotalPages] = useState(1);
   const [minPrice, setMinPrice] = useState<number>(0);
   const [maxPrice, setMaxPrice] = useState<number>(1000000);
-
   const [orderBy, setOrderBy] = useState<string>("menu_order");
 
   useEffect(() => {
@@ -97,14 +97,11 @@ export default function Shop() {
         title="Cửa hàng"
         breadcrumbs={[{ label: "Trang chủ", href: "/" }, { label: "Cửa hàng" }]}
       />
-
       <div className="grid grid-cols-7 gap-4 px-7.5">
         <div className="col-span-2">
           <div className="grid">
             <div className="mb-11">
-              <p className="text-[#0a472e]">Thẻ sản phẩm</p>
-              <Separator className="my-5" />
-              <BlogCategory categories={[]} />
+              <BlogCategory title="Thẻ sản phẩm" url="shop/category" />
             </div>
             <div className="mb-11">
               <p className="text-[#0a472e]">Giá</p>
@@ -133,9 +130,7 @@ export default function Shop() {
               </div>
             </div>
             <div>
-              <p className="text-[#0a472e]">Thẻ sản phẩm</p>
-              <Separator className="my-5" />
-              <BlogTag tags={tags} />
+              <BlogTag title="Nhãn" url="shop/tag" tags={tags} />
             </div>
           </div>
         </div>
@@ -185,7 +180,7 @@ export default function Shop() {
                 </li>
               ))}
             </ul>
-            <Pagination>
+            <Pagination className="pb-15">
               <PaginationContent>
                 <PaginationItem>
                   <PaginationPrevious

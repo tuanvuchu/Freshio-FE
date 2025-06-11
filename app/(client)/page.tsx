@@ -18,19 +18,20 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 async function getCarosel(tag: string): Promise<ProductCard> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/products/by-tag?tag=${tag}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  if (!response.ok) {
-    throw new Error("Oops");
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/products/by-tag?tag=${tag}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.json();
+  } catch (error) {
+    console.error(error);
   }
-  return response.json();
 }
 
 export default function Home() {

@@ -1,15 +1,14 @@
 "use client";
 import { useUser } from "@/context/user-context";
 import { FormatCurrency } from "@/hooks/format-currency";
+import { FormatDate } from "@/hooks/format-date";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function OrderPage() {
+export default function OrderDetail({ id }: { id: string }) {
   const { user, accessToken } = useUser();
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
   const [order, setOrder] = useState<any>(null);
+
   async function getCart(id: string) {
     try {
       const res = await fetch(
@@ -24,6 +23,7 @@ export default function OrderPage() {
       const data = await res.json();
       if (res.status === 200) {
         setOrder(data);
+        console.log(data);
       }
     } catch (error) {
       console.error(error);
@@ -38,7 +38,13 @@ export default function OrderPage() {
 
   return (
     <>
-      <div className=" my-5">
+      <div className="">
+        {order && (
+          <div className="flex justify-between pb-5">
+            <p>Ngày tạo: {FormatDate(order.created_at)}</p>
+            <p>Tổng: {FormatCurrency(order.total)}</p>
+          </div>
+        )}
         {order?.order_items?.map((p, i) => (
           <div key={i} className="flex pb-5">
             <Image

@@ -13,64 +13,70 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useState } from "react";
+import { useUser } from "@/context/user-context";
 
-type ProductFormProps = {
-  product: {
+type UserFormProps = {
+  url: string;
+  user?: {
     id: string;
-    image: string;
     name: string;
-    description: string;
-    additional_information: {
-      weight: string;
-    };
-    price: number;
-    unit: string;
-    quantity: number;
+    password: string;
+    email: string;
+    phone: number;
+    address: string;
+    image: string;
   };
 };
-
-type ProductFormValues = {
+type UserFormValues = {
   id: string;
   name: string;
-  description: string;
-  price: number;
-  unit: string;
-  quantity: number;
-  weight: string;
+  password: string;
+  email: string;
+  phone?: number;
+  address: string;
   image: string;
 };
 
-export default function ProductForm({ product }: ProductFormProps) {
-  const [imageUrl, setImageUrl] = useState(product.image);
-
-  const form = useForm<ProductFormValues>({
+export default function UserForm({ url, user }: UserFormProps) {
+  const { accessToken } = useUser();
+  const [imageUrl, setImageUrl] = useState(user?.image ?? "");
+  const form = useForm<UserFormValues>({
     defaultValues: {
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      unit: product.unit,
-      quantity: product.quantity,
-      weight: product.additional_information.weight,
-      image: product.image,
+      id: user?.id ?? undefined,
+      name: user?.name ?? "",
+      password: user?.password ?? "",
+      email: user?.email ?? "",
+      phone: user?.phone ?? undefined,
+      address: user?.address ?? "",
+      image: user?.image ?? "",
     },
   });
 
-  const onSubmit = async (data: ProductFormValues) => {
+  const onSubmit = async (data: UserFormValues) => {
     try {
-      const payload = {
-        ...data,
-        price: Number(data.price),
-        quantity: Number(data.quantity),
-      };
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/products/update/${payload.id}`,
-        {
-          method: "post",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+      if (url.includes("/create")) {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            category_id: "782db175-3ac0-43cb-84e9-4bbfd2e5a8c3",
+            product_id: result.id,
+          }),
+        });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -84,7 +90,7 @@ export default function ProductForm({ product }: ProductFormProps) {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tên sản phẩm</FormLabel>
+              <FormLabel>Tên</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -134,10 +140,10 @@ export default function ProductForm({ product }: ProductFormProps) {
 
         <FormField
           control={form.control}
-          name="description"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Mô tả</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -148,12 +154,12 @@ export default function ProductForm({ product }: ProductFormProps) {
         <div className="flex gap-2.5">
           <FormField
             control={form.control}
-            name="price"
+            name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Giá</FormLabel>
+                <FormLabel>Mật khẩu</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} />
+                  <Input type="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -161,10 +167,23 @@ export default function ProductForm({ product }: ProductFormProps) {
           />
           <FormField
             control={form.control}
-            name="unit"
+            name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Đơn vị</FormLabel>
+                <FormLabel>Số điện thoại</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Địa chỉ</FormLabel>
                 <FormControl>
                   <Input {...field} />
                 </FormControl>
@@ -173,34 +192,6 @@ export default function ProductForm({ product }: ProductFormProps) {
             )}
           />
         </div>
-
-        <FormField
-          control={form.control}
-          name="quantity"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Số lượng</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="weight"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Khối lượng</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
 
         <div className="flex justify-end gap-2">
           <Button type="submit">Lưu thay đổi</Button>

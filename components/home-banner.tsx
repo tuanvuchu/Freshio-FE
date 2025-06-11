@@ -18,6 +18,7 @@ export default function HomeBannerComponent({ homeBanner }: HomeBannerProps) {
   return (
     <div className="relative w-[279px] h-[370px] rounded-sm group overflow-hidden">
       <Image
+        sizes="100vw"
         src={homeBanner.image}
         alt="Team1"
         fill
