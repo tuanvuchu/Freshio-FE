@@ -11,7 +11,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Slider } from "@/components/ui/slider";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import {
   Pagination,
   PaginationContent,
@@ -52,13 +52,14 @@ const tags = [
 
 async function getProduct(
   current: number,
+  category?: string,
   minPrice?: number,
   maxPrice?: number,
   orderBy?: string
 ): Promise<Product> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/products/get?current=${current}&min_price=${minPrice}&max_price=${maxPrice}&orderby=${orderBy}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/products/get?current=${current}&min_price=${minPrice}&max_price=${maxPrice}&orderby=${orderBy}&category=${category}`,
       {
         method: "GET",
       }
@@ -69,7 +70,8 @@ async function getProduct(
   }
 }
 
-export default function Shop() {
+export default function Page({ params }: { params: { slug: string } }) {
+  const { slug } = use(params);
   const [products, setProducts] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -84,6 +86,7 @@ export default function Shop() {
       try {
         const data = await getProduct(
           currentPage,
+          slug,
           filterMinPrice,
           filterMaxPrice,
           orderBy

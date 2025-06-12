@@ -1,3 +1,4 @@
+// page.tsx
 "use client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -9,11 +10,12 @@ import { use, useEffect, useState } from "react";
 import { notFound } from "next/navigation";
 import BlogTag from "../../../../components/tag";
 import BlogCategory from "../../../../components/category";
-import type { Blog } from "@/types/blog";
+import { Blog } from "@/types/blog";
 import BlogRecentPost from "../components/blog-recent-post";
 import BreadcrumbComponent from "@/components/breadcrumb";
 import { Comment } from "@/types/comment";
-import { ClockFading } from "lucide-react";
+import CommentForm from "./comment-form";
+import { useUser } from "@/context/user-context";
 
 const tags = [
   "Kinh doanh",
@@ -25,13 +27,11 @@ const tags = [
   "Chủ đề",
 ];
 
-async function getBlogPost(slug: string): Promise<Blog> {
+async function getBlogPost(slug: string): Promise<Blog | undefined> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/blogs/get-by-slug?slug=${slug}`,
-      {
-        method: "get",
-      }
+      { method: "get" }
     );
     const data = await res.json();
     return data;
@@ -40,13 +40,11 @@ async function getBlogPost(slug: string): Promise<Blog> {
   }
 }
 
-async function getComment(slug: string): Promise<Comment> {
+async function getComment(slug: string): Promise<Comment[] | undefined> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/comments/?slug=${slug}`,
-      {
-        method: "get",
-      }
+      { method: "get" }
     );
     const data = await res.json();
     return data;
@@ -54,12 +52,24 @@ async function getComment(slug: string): Promise<Comment> {
     console.error(error);
   }
 }
+
 export default function Page({ params }: { params: { slug: string } }) {
   const { slug } = use(params);
-  const [blog, setBlog] = useState<Blog | null>(null);
-  const [comment, setComment] = useState<Comment | null>(null);
+  const { user, accessToken } = useUser();
+  const [parentId, setParentId] = useState(undefined);
+  const [blog, setBlog] = useState<Blog | undefined>(undefined);
+  const [comment, setComment] = useState<Comment[] | undefined>(undefined);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
+
+  const fetchComments = async () => {
+    try {
+      const data = await getComment(slug);
+      setComment(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -70,7 +80,6 @@ export default function Page({ params }: { params: { slug: string } }) {
         ]);
         setBlog(blogData);
         setComment(commentData);
-        console.log(commentData);
       } catch (error) {
         console.error(error);
         setError("err");
@@ -78,19 +87,14 @@ export default function Page({ params }: { params: { slug: string } }) {
         setLoading(false);
       }
     };
-
     fetchData();
-  }, [slug]);
+  }, []);
 
   if (loading) {
     return <div>Đang tải...</div>;
   }
 
-  if (error) {
-    notFound();
-  }
-
-  if (!blog) {
+  if (error || !blog) {
     notFound();
   }
 
@@ -133,7 +137,6 @@ export default function Page({ params }: { params: { slug: string } }) {
                 </span>
                 {"/"}
                 <span className="freshio-icon-user px-1.5">
-                  {" "}
                   bởi
                   <Link
                     className="underline pl-1.5"
@@ -144,7 +147,6 @@ export default function Page({ params }: { params: { slug: string } }) {
                 </span>
                 {"/"}
                 <span className="freshio-icon-comments-alt px-1.5">
-                  {" "}
                   {blog.comment_count}
                 </span>
               </div>
@@ -184,69 +186,72 @@ export default function Page({ params }: { params: { slug: string } }) {
           </article>
           <Separator className="my-5" />
           <div className="flex justify-between">
-            <Link href={blog.pre.slug} className="group">
-              <div className="flex items-center ">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL}/${blog.pre.image}`}
-                  width={120}
-                  height={120}
-                  alt={blog.pre.title}
-                  className="mr-5"
-                />
-                <div>
-                  <h2>Trước</h2>
-                  <p className="group-hover:text-yellow-500">
-                    {blog.pre.title}
-                  </p>
+            {blog.pre && (
+              <Link href={blog.pre.slug} className="group">
+                <div className="flex items-center">
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_API_URL}/${blog.pre.image}`}
+                    width={120}
+                    height={120}
+                    alt={blog.pre.title}
+                    className="mr-5"
+                  />
+                  <div>
+                    <h2>Trước</h2>
+                    <p className="group-hover:text-yellow-500 max-w-[150px] truncate">
+                      {blog.pre.title}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Link>
-            <Link href={blog.next.slug} className="group">
-              <div className="flex items-center ">
-                <div>
-                  <h2>Sau</h2>
-                  <p className="group-hover:text-yellow-500">
-                    {blog.next.title}
-                  </p>
+              </Link>
+            )}
+            {blog.next && (
+              <Link href={blog.next.slug} className="group">
+                <div className="flex items-center">
+                  <div>
+                    <h2>Sau</h2>
+                    <p className="group-hover:text-yellow-500 max-w-[150px] truncate">
+                      {blog.next.title}
+                    </p>
+                  </div>
+                  <Image
+                    src={`${process.env.NEXT_PUBLIC_API_URL}/${blog.next.image}`}
+                    width={120}
+                    height={120}
+                    alt={blog.next.title}
+                    className="ml-5"
+                  />
                 </div>
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_API_URL}/${blog.next.image}`}
-                  width={120}
-                  height={120}
-                  alt={blog.next.title}
-                  className="ml-5"
-                />
-              </div>
-            </Link>
+              </Link>
+            )}
           </div>
           <Separator className="my-5" />
           <div>
-            <h2 className="font-bold text-green-800 py-5">
+            <h2 className="font-bold text-green-800 py-5 text-2xl">
               {blog.comment_count} bình luận
             </h2>
 
             {comment?.map((p, i) => (
-              <div key={i}>
+              <div key={i} data-id={p.id}>
                 <div className="flex">
-                  <div className="mr-2">
+                  <div className="mr-4">
                     <Image
                       src={`${process.env.NEXT_PUBLIC_API_URL}/${p.users.image}`}
                       alt={p.users.name}
-                      width={75}
-                      height={75}
+                      width={50}
+                      height={50}
                     />
                   </div>
                   <div>
                     <div className="flex items-center">
-                      <h2 className="pr-5">{p.users.name}</h2>
-                      <p className="text-gray-300">
-                        {FormatDate(p.created_at)}
-                      </p>
+                      <h2 className="pr-5 font-bold">{p.users.name}</h2>
+                      <p className="text-[#999]">{FormatDate(p.created_at)}</p>
                     </div>
-                    <p className="py-2">{p.content}</p>
+                    <p className="py-2 text-[#555]">{p.content}</p>
                     <Button
                       variant="ghost"
-                      className="hover: cursor-pointer hover:bg-white text-yellow-600 hover:text-yellow-600"
+                      onClick={() => setParentId(p.id)}
+                      className="hover:cursor-pointer hover:bg-white text-[#a8b324]"
                     >
                       Trả lời
                     </Button>
@@ -256,31 +261,35 @@ export default function Page({ params }: { params: { slug: string } }) {
                 {p.other_comments && (
                   <div className="reply-comment pl-10">
                     {p.other_comments.map((p1, i) => (
-                      <div key={i} className="flex">
-                        <div className="mr-2">
-                          <Image
-                            src={`${process.env.NEXT_PUBLIC_API_URL}/${p1.users.image}`}
-                            alt={p1.users.name}
-                            width={75}
-                            height={75}
-                            className="rounded-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-4">
-                            <h2>{p1.users.name}</h2>
-                            <p className="text-gray-300">
-                              {FormatDate(p1.created_at)}
-                            </p>
+                      <div key={i}>
+                        <div className="flex">
+                          <div className="mr-4">
+                            <Image
+                              src={`${process.env.NEXT_PUBLIC_API_URL}/${p1.users.image}`}
+                              alt={p1.users.name}
+                              width={50}
+                              height={50}
+                              className="rounded-full object-cover"
+                            />
                           </div>
-                          <p>{p1.content}</p>
-                          <Button
-                            variant="ghost"
-                            className="hover:cursor-pointer hover:bg-white text-yellow-600 hover:text-yellow-600"
-                          >
-                            Trả lời
-                          </Button>
+                          <div>
+                            <div className="flex items-center gap-4">
+                              <h2 className="font-bold">{p1.users.name}</h2>
+                              <p className="text-[#999]">
+                                {FormatDate(p1.created_at)}
+                              </p>
+                            </div>
+                            <p className="py-2 text-[#555]">{p1.content}</p>
+                            <Button
+                              variant="ghost"
+                              onClick={() => setParentId(p.id)}
+                              className="hover:cursor-pointer hover:bg-white text-[#a8b324]"
+                            >
+                              Trả lời
+                            </Button>
+                          </div>
                         </div>
+                        <Separator className="my-5" />
                       </div>
                     ))}
                   </div>
@@ -288,6 +297,19 @@ export default function Page({ params }: { params: { slug: string } }) {
               </div>
             ))}
           </div>
+          {user && (
+            <div>
+              <h2 className="font-bold text-green-800 py-5 text-2xl">
+                Để lại bình luận
+              </h2>
+              <CommentForm
+                blog_id={blog.id}
+                user_id={user.id}
+                parent_id={parentId}
+                onSuccess={fetchComments}
+              />
+            </div>
+          )}
         </div>
         <div className="col-span-2 col-start-7">
           <SearchForm />

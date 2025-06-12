@@ -1,14 +1,21 @@
 import Link from "next/link";
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
-import { Eye, GitCompareArrows, Heart } from "lucide-react";
+import { Eye, Heart } from "lucide-react";
 import Image from "next/image";
 import { Separator } from "./ui/separator";
 import { ProductCard } from "@/types/product-card";
 import { FormatCurrency } from "@/hooks/format-currency";
 import { useUser } from "@/context/user-context";
 import { toast } from "sonner";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "./ui/input";
+import Slug from "@/hooks/slug";
 type ProductProps = {
   product: ProductCard;
 };
@@ -88,12 +95,81 @@ export default function ProductCardComponent({ product }: ProductProps) {
             <Button variant="ghost" className="shop-control">
               <Heart />
             </Button>
-            <Button variant="ghost" className="shop-control">
+            {/* <Button variant="ghost" className="shop-control">
               <GitCompareArrows />
-            </Button>
-            <Button variant="ghost" className="shop-control">
-              <Eye />
-            </Button>
+            </Button> */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="ghost" className="shop-control">
+                  <Eye />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-none w-[900px]">
+                <DialogTitle></DialogTitle>
+                <div className="grid grid-cols-5 gap-4">
+                  <div className="col-span-2">
+                    <Image
+                      src={`${process.env.NEXT_PUBLIC_API_URL}/${product.image}`}
+                      width="350"
+                      height="350"
+                      alt={product.name}
+                    />
+                  </div>
+                  <div className="col-span-3 col-start-3">
+                    <h2 className="font-bold text-3xl text-green-900 mb-5">
+                      {product.name}
+                    </h2>
+                    <p className="text-yellow-900 font-bold mb-5">
+                      {FormatCurrency(Number(product.price))}
+                    </p>
+                    <p className="mb-5">{product.description}</p>
+                    {product.quantity > 0 ? (
+                      <div className="flex items-center w-3/6 space-x-2 my-5">
+                        <Input type="number" min={1} defaultValue={1} />
+                        <Button
+                          type="submit"
+                          className="bg-yellow-600 hover:cursor-pointer hover:bg-yellow-900"
+                          onClick={() =>
+                            addToCart(accessToken, user.id, {
+                              product_id: product.id,
+                              quantity: 1,
+                            })
+                          }
+                        >
+                          Thêm vào giỏ hàng
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button disabled className="my-5 bg-gray-400 w-full">
+                        Hết hàng
+                      </Button>
+                    )}
+                    <Separator className="my-5" />
+                    <p className="mb-5">
+                      SKU: <span className="text-[#999]">{product.sku}</span>
+                    </p>
+                    <p>
+                      Danh mục:{" "}
+                      {product.categories?.length > 0 && (
+                        <span>
+                          {product.categories.map((p, i) => (
+                            <Link key={i} href={`product-category/${Slug(p)}`}>
+                              <Button
+                                variant="link"
+                                className="p-0 text-[#999]"
+                              >
+                                {p}
+                                {i < product.categories.length - 1 && ","}
+                              </Button>
+                            </Link>
+                          ))}
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
         <div className="grid justify-items-center">

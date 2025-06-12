@@ -61,19 +61,19 @@ export default function Footer() {
             <h2>Thông tin</h2>
             <ul>
               <li>
-                <Link href="about-us">Về chúng tôi</Link>
+                <Link href="/about-us">Về chúng tôi</Link>
               </li>
               <li>
-                <Link href="blog">Blog</Link>
+                <Link href="/blog">Blog</Link>
               </li>
               <li>
-                <Link href="checkout">Thanh toán</Link>
+                <Link href="/checkout">Thanh toán</Link>
               </li>
               <li>
-                <Link href="contact-us">Liên hệ</Link>
+                <Link href="/contact-us">Liên hệ</Link>
               </li>
               <li>
-                <Link href="service">Dịch vụ</Link>
+                <Link href="/service">Dịch vụ</Link>
               </li>
             </ul>
           </div>
@@ -81,16 +81,16 @@ export default function Footer() {
             <h2>Tài khoản của tôi</h2>
             <ul>
               <li>
-                <Link href="my-account">Tài khoản của tôi</Link>
+                <Link href="/my-account">Tài khoản của tôi</Link>
               </li>
               <li>
-                <Link href="contact-us">Liên hệ</Link>
+                <Link href="/contact-us">Liên hệ</Link>
               </li>
               <li>
-                <Link href="cart">Giỏ hàng</Link>
+                <Link href="/cart">Giỏ hàng</Link>
               </li>
               <li>
-                <Link href="shop">Cửa hàng</Link>
+                <Link href="/shop">Cửa hàng</Link>
               </li>
             </ul>
           </div>

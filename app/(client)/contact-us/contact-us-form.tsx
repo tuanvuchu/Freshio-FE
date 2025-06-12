@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import "@/styles/style.css";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const FormSchema = z.object({
@@ -39,7 +40,23 @@ export default function FormContact() {
     },
   });
 
-  function onSubmit() {}
+  async function onSubmit(values: z.infer<typeof FormSchema>) {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/contacts`, {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+      if (res.ok) {
+        form.reset();
+        toast("Cảm ơn bạn rất nhiều <3");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

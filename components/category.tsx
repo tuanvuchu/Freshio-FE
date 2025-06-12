@@ -4,35 +4,34 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-type CategoryData = {
+type Category = {
   name: string;
   count: number;
 };
 
-type Category = {
-  url: string;
+type CategoryProps = {
   title: string;
+  url_api: string;
+  url: string;
 };
-
-async function getCategories(): Promise<CategoryData[]> {
+async function getCategories(url: string): Promise<Category[]> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/blogs/categories`
+      `${process.env.NEXT_PUBLIC_API_URL}/${url}/categories`
     );
-    const data: CategoryData[] = await res.json();
+    const data: Category[] = await res.json();
     return data;
   } catch (error) {
     console.error(error);
-    return [];
+    throw error;
   }
 }
 
-export default function BlogCategory({ title, url }: Category) {
-  const [categories, setCategories] = useState<CategoryData[]>([]);
-
+export default function Category({ title, url, url_api }: CategoryProps) {
+  const [categories, setCategories] = useState<Category[]>([]);
   useEffect(() => {
     const load = async () => {
-      const data = await getCategories();
+      const data = await getCategories(url_api);
       setCategories(data);
     };
     load();

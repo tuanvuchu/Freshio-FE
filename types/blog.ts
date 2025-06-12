@@ -1,4 +1,7 @@
-export type BlogData = {
+type Child = { image: string; slug: string; title: string };
+
+export type Blog = {
+  id: string;
   title: string;
   image: string;
   description: string;
@@ -8,4 +11,6 @@ export type BlogData = {
   author: string;
   comment_count: number;
   categories: Array<{ name?: string; slug?: number }>;
+  pre?: Child;
+  next?: Child;
 };
