@@ -29,10 +29,27 @@ import { Separator } from "@/components/ui/separator";
 import { useUser } from "@/context/user-context";
 import { useEffect, useState, useRef } from "react";
 import { FormatCurrency } from "@/hooks/format-currency";
+import type { Cart } from "@/types/cart";
 
+type CartItems = {
+  id: string;
+  name: string;
+  description: string;
+  additional_information: {
+    weight: string;
+  };
+  price: number;
+  unit: string;
+  quantity: number;
+  image: string;
+  sku: string;
+  slug: string;
+  created_at: string;
+  updated_at: string;
+};
 export default function Cart() {
   const { user, accessToken } = useUser();
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [cartItems, setCartItems] = useState<CartItems[]>([]);
   const [cartId, setCartId] = useState<string | null>(null);
   const tableRef = useRef<HTMLTableElement>(null);
 
@@ -82,6 +99,7 @@ export default function Cart() {
       console.error(error);
     }
   }
+
   async function updateQuantity(
     cart_id: string,
     product_id: string,
@@ -122,7 +140,7 @@ export default function Cart() {
     const updates: Array<{ productId: string; quantity: number }> = [];
     rows.forEach((row) => {
       const productId = row.getAttribute("data-id");
-      const input = row.querySelector("input[type=number]");
+      const input = row.querySelector("input[type=number]") as HTMLInputElement;
       if (productId && input) {
         const quantity = parseInt(input.value);
         if (quantity > 0) {
@@ -163,14 +181,14 @@ export default function Cart() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {cartItems.map((product) => (
-                <TableRow key={product.id} data-id={product.id}>
+              {cartItems.map((p) => (
+                <TableRow key={p.id} data-id={p.id}>
                   <TableCell>
                     <span
                       className="freshio-icon-times hover:cursor-pointer"
                       onClick={() => {
                         if (cartId) {
-                          deleteItem(cartId, product.id);
+                          deleteItem(cartId, p.id);
                         }
                       }}
                     ></span>
@@ -180,10 +198,10 @@ export default function Cart() {
                       <DialogTrigger>
                         <Image
                           className="hover:cursor-pointer"
-                          src={`${process.env.NEXT_PUBLIC_API_URL}/${product.image}`}
+                          src={`${process.env.NEXT_PUBLIC_API_URL}/${p.image}`}
                           width="100"
                           height="100"
-                          alt={product.name}
+                          alt={p.name}
                         />
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-none w-[900px]">
@@ -191,23 +209,22 @@ export default function Cart() {
                         <div className="grid grid-cols-5 gap-4">
                           <div className="col-span-2">
                             <Image
-                              src={`${process.env.NEXT_PUBLIC_API_URL}/${product.image}`}
+                              src={`${process.env.NEXT_PUBLIC_API_URL}/${p.image}`}
                               width="350"
                               height="350"
-                              alt={product.name}
+                              alt={p.name}
                             />
                           </div>
                           <div className="col-span-3 col-start-3">
                             <h2 className="font-bold text-3xl text-green-900 mb-5">
-                              {product.name}
+                              {p.name}
                             </h2>
                             <p className="text-yellow-900 font-bold mb-5">
-                              {FormatCurrency(product.price)}
+                              {FormatCurrency(p.price)}
                             </p>
-                            <p className="mb-5">{product.description}</p>
+                            <p className="mb-5">{p.description}</p>
                             <p>
-                              SKU:{" "}
-                              <span className="text-[#999]">{product.sku}</span>
+                              SKU: <span className="text-[#999]">{p.sku}</span>
                             </p>
                           </div>
                         </div>
@@ -216,46 +233,45 @@ export default function Cart() {
                   </TableCell>
                   <TableCell>
                     <Dialog>
-                      <DialogTrigger>{product.name}</DialogTrigger>
+                      <DialogTrigger>{p.name}</DialogTrigger>
                       <DialogContent className="sm:max-w-none w-[900px]">
                         <DialogTitle></DialogTitle>
                         <div className="grid grid-cols-5 gap-4">
                           <div className="col-span-2">
                             <Image
-                              src={`${process.env.NEXT_PUBLIC_API_URL}/${product.image}`}
+                              src={`${process.env.NEXT_PUBLIC_API_URL}/${p.image}`}
                               width="350"
                               height="350"
-                              alt={product.name}
+                              alt={p.name}
                             />
                           </div>
                           <div className="col-span-3 col-start-3">
                             <h2 className="font-bold text-3xl text-green-900 mb-5">
-                              {product.name}
+                              {p.name}
                             </h2>
                             <p className="text-yellow-900 font-bold mb-5">
-                              {FormatCurrency(product.price)}
+                              {FormatCurrency(p.price)}
                             </p>
-                            <p className="mb-5">{product.description}</p>
+                            <p className="mb-5">{p.description}</p>
                             <p>
-                              SKU:{" "}
-                              <span className="text-[#999]">{product.sku}</span>
+                              SKU: <span className="text-[#999]">{p.sku}</span>
                             </p>
                           </div>
                         </div>
                       </DialogContent>
                     </Dialog>
                   </TableCell>
-                  <TableCell>{FormatCurrency(product.price)}</TableCell>
+                  <TableCell>{FormatCurrency(p.price)}</TableCell>
                   <TableCell>
                     <Input
                       className="w-20"
                       type="number"
                       min={1}
-                      defaultValue={product.quantity}
+                      defaultValue={p.quantity}
                     />
                   </TableCell>
                   <TableCell>
-                    {FormatCurrency(Number(product.price) * product.quantity)}
+                    {FormatCurrency(Number(p.price) * p.quantity)}
                   </TableCell>
                 </TableRow>
               ))}

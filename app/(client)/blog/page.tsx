@@ -17,11 +17,12 @@ import SearchForm from "@/components/search-form";
 import { useEffect, useState } from "react";
 import { FormatDate } from "@/hooks/format-date";
 import BlogCategory from "../../../components/category";
-import type { BlogData } from "@/types/blog";
+import type { Blog } from "@/types/blog";
 import BlogRecentPost from "./components/blog-recent-post";
 import BlogTag from "../../../components/tag";
+import { Skeleton } from "@/components/ui/skeleton";
 
-type Blog = {
+type BlogData = {
   currentPage: number;
   totalPages: number;
   pageSize: number;
@@ -30,10 +31,10 @@ type Blog = {
   hasPreviousPage: boolean;
   nextPage: number | null;
   previousPage: number | null;
-  items: BlogData[];
+  items: Blog[];
 };
 
-async function getBlogs(current: number): Promise<Blog> {
+async function getBlogs(current: number): Promise<BlogData> {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/blogs/get-all?current=${current}&pageSize=10`,
@@ -44,6 +45,7 @@ async function getBlogs(current: number): Promise<Blog> {
     return response.json();
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -89,7 +91,7 @@ export default function Blog() {
   };
 
   if (loading) {
-    return <div>Đang tải...</div>;
+    return <Skeleton className="w-full h-80 m-10" />;
   }
 
   if (error) {
@@ -202,7 +204,11 @@ export default function Blog() {
         </div>
         <div className="col-span-2 col-start-7">
           <SearchForm />
-          <BlogCategory title="Danh mục bài đăng" url="/blog/category" />
+          <BlogCategory
+            title="Danh mục bài đăng"
+            url="/blog/category"
+            url_api="blogs"
+          />
           <BlogRecentPost />
           <BlogTag title="Nhãn" url="/blog/tag" tags={tags} />
         </div>

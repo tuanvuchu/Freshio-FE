@@ -1,4 +1,3 @@
-// page.tsx
 "use client";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -16,6 +15,7 @@ import BreadcrumbComponent from "@/components/breadcrumb";
 import { Comment } from "@/types/comment";
 import CommentForm from "./comment-form";
 import { useUser } from "@/context/user-context";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const tags = [
   "Kinh doanh",
@@ -53,10 +53,14 @@ async function getComment(slug: string): Promise<Comment[] | undefined> {
   }
 }
 
-export default function Page({ params }: { params: { slug: string } }) {
+export default function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = use(params);
-  const { user, accessToken } = useUser();
-  const [parentId, setParentId] = useState(undefined);
+  const { user } = useUser();
+  const [parentId, setParentId] = useState<string | undefined>(undefined);
   const [blog, setBlog] = useState<Blog | undefined>(undefined);
   const [comment, setComment] = useState<Comment[] | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -91,7 +95,7 @@ export default function Page({ params }: { params: { slug: string } }) {
   }, []);
 
   if (loading) {
-    return <div>Đang tải...</div>;
+    return <Skeleton className="w-full h-80" />;
   }
 
   if (error || !blog) {
@@ -245,12 +249,16 @@ export default function Page({ params }: { params: { slug: string } }) {
                   <div>
                     <div className="flex items-center">
                       <h2 className="pr-5 font-bold">{p.users.name}</h2>
-                      <p className="text-[#999]">{FormatDate(p.created_at)}</p>
+                      <p className="text-[#999]">
+                        {FormatDate(new Date(p.created_at))}
+                      </p>
                     </div>
                     <p className="py-2 text-[#555]">{p.content}</p>
                     <Button
                       variant="ghost"
-                      onClick={() => setParentId(p.id)}
+                      onClick={() => {
+                        setParentId(p.id);
+                      }}
                       className="hover:cursor-pointer hover:bg-white text-[#a8b324]"
                     >
                       Trả lời
@@ -276,13 +284,15 @@ export default function Page({ params }: { params: { slug: string } }) {
                             <div className="flex items-center gap-4">
                               <h2 className="font-bold">{p1.users.name}</h2>
                               <p className="text-[#999]">
-                                {FormatDate(p1.created_at)}
+                                {FormatDate(new Date(p1.created_at))}
                               </p>
                             </div>
                             <p className="py-2 text-[#555]">{p1.content}</p>
                             <Button
                               variant="ghost"
-                              onClick={() => setParentId(p.id)}
+                              onClick={() => {
+                                setParentId(p.id);
+                              }}
                               className="hover:cursor-pointer hover:bg-white text-[#a8b324]"
                             >
                               Trả lời
@@ -307,13 +317,14 @@ export default function Page({ params }: { params: { slug: string } }) {
                 user_id={user.id}
                 parent_id={parentId}
                 onSuccess={fetchComments}
+                onResetParentId={() => setParentId(undefined)}
               />
             </div>
           )}
         </div>
         <div className="col-span-2 col-start-7">
           <SearchForm />
-          <BlogCategory title="Danh mục" url="category" />
+          <BlogCategory title="Danh mục" url="category" url_api="blogs" />
           <BlogRecentPost />
           <BlogTag title="Thẻ" url="tag" tags={tags} />
         </div>

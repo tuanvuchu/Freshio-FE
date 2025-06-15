@@ -23,7 +23,7 @@ import {
 import ProductCardComponent from "@/components/product-card";
 import { ProductCard } from "@/types/product-card";
 import { FormatCurrency } from "@/hooks/format-currency";
-import BlogCategory from "@/components/category";
+import ProductCategory from "@/components/category";
 import BlogTag from "@/components/tag";
 
 type Product = {
@@ -67,10 +67,15 @@ async function getProduct(
     return res.json();
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
-export default function Page({ params }: { params: { slug: string } }) {
+export default function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = use(params);
   const [products, setProducts] = useState<Product | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -98,7 +103,7 @@ export default function Page({ params }: { params: { slug: string } }) {
       }
     }
     fetchProducts();
-  }, [currentPage, filterMinPrice, filterMaxPrice, orderBy]);
+  }, [currentPage, filterMinPrice, filterMaxPrice, orderBy, slug]);
 
   return (
     <>
@@ -111,7 +116,7 @@ export default function Page({ params }: { params: { slug: string } }) {
         <div className="col-span-2">
           <div className="grid">
             <div className="mb-11">
-              <BlogCategory
+              <ProductCategory
                 title="Thẻ sản phẩm"
                 url="shop/category"
                 url_api="products"

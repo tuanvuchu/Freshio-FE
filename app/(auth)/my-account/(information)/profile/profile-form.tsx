@@ -20,7 +20,7 @@ type ProfileFormSchema = {
 };
 
 export function ProfileForm() {
-  const { user } = useUser();
+  const { user, accessToken } = useUser();
 
   const form = useForm<ProfileFormSchema>({
     defaultValues: {
@@ -40,8 +40,23 @@ export function ProfileForm() {
     }
   }, [user, form]);
 
-  function onSubmit(data: ProfileFormSchema) {
-    console.log(data);
+  async function onSubmit(data: ProfileFormSchema) {
+    try {
+      const payload = {
+        id: user?.id,
+        ...data,
+      };
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/update`, {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -70,7 +85,7 @@ export function ProfileForm() {
           <FormField
             control={form.control}
             name="image"
-            render={({ field }) => (
+            render={({}) => (
               <FormItem>
                 <FormLabel>Ảnh đại diện</FormLabel>
                 <FormControl>

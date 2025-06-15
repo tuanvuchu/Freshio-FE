@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useUser } from "@/context/user-context";
 import { Order, columns } from "./columns";
-import { OrderDataTable } from "./data-table";
+import { DataTable } from "../../../../components/data-table/data-table";
 
 async function getData(accessToken: string): Promise<Order[]> {
   try {
@@ -21,13 +21,13 @@ async function getData(accessToken: string): Promise<Order[]> {
   }
 }
 
-export default function DemoPage() {
+export default function Page() {
   const { accessToken } = useUser();
   const [data, setData] = useState<Order[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await getData(accessToken);
+      const result = await getData(accessToken!);
       setData(result);
     };
 
@@ -36,7 +36,7 @@ export default function DemoPage() {
 
   return (
     <div className="container mx-auto py-10">
-      <OrderDataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={data} />
     </div>
   );
 }

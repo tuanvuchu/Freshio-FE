@@ -19,7 +19,7 @@ type AccountFormSchema = {
 };
 
 export function AccountForm() {
-  const { user } = useUser();
+  const { user, accessToken } = useUser();
 
   const form = useForm<AccountFormSchema>({
     defaultValues: {
@@ -39,8 +39,23 @@ export function AccountForm() {
     }
   }, [user, form]);
 
-  function onSubmit(data: AccountFormSchema) {
-    console.log("Dữ liệu gửi lên:", data);
+  async function onSubmit(data: AccountFormSchema) {
+    try {
+      const payload = {
+        id: user?.id,
+        ...data,
+      };
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/update`, {
+        method: "Post",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -77,7 +92,12 @@ export function AccountForm() {
             <FormItem>
               <FormLabel>Mật khẩu</FormLabel>
               <FormControl>
-                <Input placeholder="Mật khẩu" type="password" {...field} />
+                <Input
+                  autoComplete="new-password"
+                  placeholder="Mật khẩu"
+                  type="password"
+                  {...field}
+                />
               </FormControl>
             </FormItem>
           )}

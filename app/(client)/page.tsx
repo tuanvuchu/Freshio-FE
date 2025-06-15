@@ -17,7 +17,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-async function getCarosel(tag: string): Promise<ProductCard> {
+async function getCarosel(tag: string): Promise<ProductCard[]> {
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/products/by-tag?tag=${tag}`,
@@ -31,6 +31,7 @@ async function getCarosel(tag: string): Promise<ProductCard> {
     return response.json();
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 

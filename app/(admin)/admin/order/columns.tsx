@@ -15,7 +15,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "../components/data-table-column-header";
+import { DataTableColumnHeader } from "../../../../components/data-table/data-table-column-header";
 import { useState } from "react";
 import { FormatCurrency } from "@/hooks/format-currency";
 import {
@@ -27,6 +27,7 @@ import {
 import { AlertDialogHeader } from "@/components/ui/alert-dialog";
 import OrderDetail from "./order-detail";
 import { useUser } from "@/context/user-context";
+import { FormatDate } from "@/hooks/format-date";
 
 export type Order = {
   id: string;
@@ -162,7 +163,10 @@ export const columns: ColumnDef<Order>[] = [
   },
   {
     accessorKey: "created_at",
-    header: "Ngày đặt",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Ngày đặt" />
+    ),
+    cell: ({ row }) => FormatDate(row.getValue("created_at")),
   },
   {
     id: "actions",
@@ -175,7 +179,7 @@ export const columns: ColumnDef<Order>[] = [
             <DialogTrigger asChild>
               <Button variant="outline">Xem chi tiết</Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent className="sm:max-w-[500px]">
               <AlertDialogHeader>
                 <DialogTitle></DialogTitle>
               </AlertDialogHeader>

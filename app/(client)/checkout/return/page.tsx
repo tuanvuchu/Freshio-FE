@@ -32,7 +32,7 @@ export default function Return() {
         },
         body: JSON.stringify({
           user_id: user.id,
-          total: parseInt(vnp_Amount),
+          total: parseInt(vnp_Amount ?? "0"),
           payment_method: a,
           note: vnp_OrderInfo,
         }),

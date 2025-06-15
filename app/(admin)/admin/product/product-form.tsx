@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useState } from "react";
 import { useUser } from "@/context/user-context";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 
 type ProductFormProps = {
   url: string;
@@ -74,6 +76,8 @@ export default function ProductForm({ url, product }: ProductFormProps) {
         },
         body: JSON.stringify(payload),
       });
+      form.reset();
+      toast("Thành công");
       const result = await res.json();
       if (url.includes("/create")) {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tags`, {
@@ -132,7 +136,7 @@ export default function ProductForm({ url, product }: ProductFormProps) {
                 setImageUrl(result.filePath);
                 form.setValue("image", result.filePath);
               } catch (error) {
-                console.log(error);
+                console.error(error);
               }
             }}
           />
@@ -156,7 +160,7 @@ export default function ProductForm({ url, product }: ProductFormProps) {
             <FormItem>
               <FormLabel>Mô tả</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Textarea className="max-h-[20px] overflow-y-auto" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -170,7 +174,7 @@ export default function ProductForm({ url, product }: ProductFormProps) {
               <FormItem>
                 <FormLabel>Giá</FormLabel>
                 <FormControl>
-                  <Input type="number" {...field} />
+                  <Input min={0} type="number" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -198,7 +202,7 @@ export default function ProductForm({ url, product }: ProductFormProps) {
             <FormItem>
               <FormLabel>Số lượng</FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input min={0} type="number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "U Food",
-  description: "Organic & Food Store",
+  description: "Cửa hàng Thực phẩm & Hữu cơ",
 };
 
 export default function RootLayout({

@@ -22,8 +22,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import React from "react";
-import { DataTableToolbar } from "@/app/(admin)/admin/order/data-table-toolbar";
-import { DataTablePagination } from "@/components/data-table/data-table-pagination";
+import { DataTablePagination } from "./data-table-pagination";
+import { DataTableToolbar } from "../../app/(admin)/admin/order/data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

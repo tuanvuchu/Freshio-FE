@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "../components/data-table-column-header";
+import { DataTableColumnHeader } from "../../../../components/data-table/data-table-column-header";
 import Image from "next/image";
 import { FormatCurrency } from "@/hooks/format-currency";
 import ProductForm from "./product-form";
@@ -36,6 +36,11 @@ export type Product = {
   price: number;
   unit: string;
   quantity: number;
+};
+const infoKeyMap: Record<string, string> = {
+  weight: "Khối lượng",
+  color: "Màu sắc",
+  size: "Kích thước",
 };
 
 export const columns: ColumnDef<Product>[] = [
@@ -104,11 +109,12 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => {
       const info = row.original.additional_information;
       if (!info || typeof info !== "object") return "-";
+
       return (
         <div className="space-y-1">
           {Object.entries(info).map(([key, value]) => (
             <div key={key}>
-              <span className="font-medium">{key}: </span>
+              <span className="font-medium">{infoKeyMap[key] || key}: </span>
               <span>{String(value)}</span>
             </div>
           ))}

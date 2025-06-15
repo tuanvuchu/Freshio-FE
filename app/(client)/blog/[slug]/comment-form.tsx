@@ -29,6 +29,7 @@ type CommentFormProps = {
   user_id: string;
   parent_id?: string;
   onSuccess?: () => void;
+  onResetParentId?: () => void;
 };
 
 export default function CommentForm({
@@ -36,34 +37,33 @@ export default function CommentForm({
   user_id,
   parent_id,
   onSuccess,
+  onResetParentId,
 }: CommentFormProps) {
-  useEffect(() => {
-    form.setValue("parent_id", parent_id);
-  }, [parent_id]);
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
       blog_id,
       user_id,
-      parent_id,
     },
   });
 
+  useEffect(() => {
+    form.setValue("parent_id", parent_id || undefined);
+  }, [parent_id]);
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/comments`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/comments`, {
         method: "post",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(values),
       });
-      if (res.ok) {
-        if (onSuccess) onSuccess();
-        form.reset({ content: "", blog_id, user_id, parent_id: undefined });
-      }
+      if (onSuccess) onSuccess();
+      if (onResetParentId) onResetParentId();
+      form.reset({ content: "", blog_id, user_id, parent_id: undefined });
     } catch (error) {
       console.error(error);
     }
@@ -84,15 +84,9 @@ export default function CommentForm({
             </FormItem>
           )}
         />
-        <Input type="hidden" value={blog_id} {...form.register("blog_id")} />
-        <Input type="hidden" value={user_id} {...form.register("user_id")} />
-        {parent_id && (
-          <Input
-            type="hidden"
-            value={parent_id}
-            {...form.register("parent_id")}
-          />
-        )}
+        <Input type="hidden" {...form.register("blog_id")} />
+        <Input type="hidden" {...form.register("user_id")} />
+        <Input type="hidden" {...form.register("parent_id")} />
         <Button
           className="border h-10 w-fit bg-[#a8b324] rounded-full hover:cursor-pointer hover:bg-[] mb-20"
           type="submit"

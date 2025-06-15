@@ -60,7 +60,11 @@ const tags = [
   "rau củ",
 ];
 
-export default function Page({ params }: { params: { slug: string } }) {
+export default function Page({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const { slug } = use(params);
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -198,7 +202,11 @@ export default function Page({ params }: { params: { slug: string } }) {
         </div>
         <div className="col-span-2 col-start-7">
           <SearchForm />
-          <BlogCategory title="Danh mục bài đăng" url="/blog/category" />
+          <BlogCategory
+            title="Danh mục bài đăng"
+            url="/blog/category"
+            url_api="blogs"
+          />
           <BlogRecentPost />
           <BlogTag title="Nhãn" url="/blog/tag" tags={tags} />
         </div>

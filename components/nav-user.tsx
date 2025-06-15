@@ -2,6 +2,7 @@
 
 import {
   IconDotsVertical,
+  IconHome,
   IconLogout,
   IconUserCircle,
 } from "@tabler/icons-react";
@@ -22,6 +23,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useUser } from "@/context/user-context";
+import Link from "next/link";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
@@ -77,13 +79,17 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <IconUserCircle />
-                Tài Khoản
+                Tài khoản
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <IconHome />
+                <Link href="/">Trang chủ</Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem>
               <IconLogout />
-              Đăng Xuất
+              Đăng xuất
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

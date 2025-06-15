@@ -23,8 +23,6 @@ import {
 } from "@/components/ui/table";
 import React from "react";
 import { Input } from "@/components/ui/input";
-import { DataTablePagination } from "../components/data-table-pagination";
-import { DataTableViewOptions } from "../components/data-table-view-options";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +33,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import UserForm from "./user-form";
+import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
+import { DataTablePagination } from "@/components/data-table/data-table-pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -60,14 +60,10 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
-    //Filtering
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    //chon cot xuat hien
     onColumnVisibilityChange: setColumnVisibility,
-    // them nut tick chon
     onRowSelectionChange: setRowSelection,
-    //loc
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {

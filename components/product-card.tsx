@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "./ui/input";
 import Slug from "@/hooks/slug";
+
 type ProductProps = {
   product: ProductCard;
 };
@@ -25,6 +26,26 @@ interface AddCartItemDto {
   quantity: number;
 }
 
+type CartItem = {
+  cart_id: string;
+  product_id: string;
+  quantity: number;
+  created_at: string;
+  updated_at: string;
+};
+
+type Cart = {
+  id: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+  cart_items: CartItem[];
+};
+
+interface AddWishlistItemDto {
+  product_id: string;
+  wishlist_id?: number;
+}
 export async function addToCart(
   accessToken: string,
   user_id: string,
@@ -36,8 +57,8 @@ export async function addToCart(
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    const carts = await resCarts.json();
-    let cart = carts.find((c: any) => c.user_id === user_id);
+    const carts: Cart[] = await resCarts.json();
+    let cart = carts.find((c) => c.user_id === user_id);
     if (!cart) {
       const resCreate = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/carts`,
@@ -55,7 +76,7 @@ export async function addToCart(
       cart = await resCreate.json();
     }
     const resAddItem = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/carts/${cart.id}/items`,
+      `${process.env.NEXT_PUBLIC_API_URL}/carts/${cart?.id}/items`,
       {
         method: "POST",
         headers: {
@@ -65,6 +86,56 @@ export async function addToCart(
         body: JSON.stringify({
           product_id: item.product_id,
           quantity: item.quantity,
+        }),
+      }
+    );
+    if (!resAddItem.ok) throw new Error("Không thể thêm sản phẩm vào giỏ");
+    toast("Đã thêm");
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export async function addToWishlist(
+  accessToken: string,
+  user_id: string,
+  item: AddWishlistItemDto
+): Promise<void> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/wishlists`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    const carts: Cart[] = await res.json();
+    let cart = carts.find((c) => c.user_id === user_id);
+    if (!cart) {
+      const resCreate = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/wishlists`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ user_id }),
+        }
+      );
+
+      if (!resCreate.ok) throw new Error("Không thể tạo giỏ hàng");
+      cart = await resCreate.json();
+    }
+    const resAddItem = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/wishlists/${cart?.id}/items`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({
+          wishlist_id: item.wishlist_id,
+          product_id: item.product_id,
         }),
       }
     );
@@ -92,7 +163,15 @@ export default function ProductCardComponent({ product }: ProductProps) {
           </Link>
           {/* todo */}
           <div className="absolute inset-x-0 bottom-10 flex justify-center gap-1 opacity-0 group-hover/product:opacity-100 group-hover/product:bottom-5 transition-[opacity,bottom] duration-300">
-            <Button variant="ghost" className="shop-control">
+            <Button
+              variant="ghost"
+              className="shop-control"
+              onClick={() =>
+                addToWishlist(accessToken!, user?.id ?? "", {
+                  product_id: product.id,
+                })
+              }
+            >
               <Heart />
             </Button>
             {/* <Button variant="ghost" className="shop-control">
@@ -130,7 +209,7 @@ export default function ProductCardComponent({ product }: ProductProps) {
                           type="submit"
                           className="bg-yellow-600 hover:cursor-pointer hover:bg-yellow-900"
                           onClick={() =>
-                            addToCart(accessToken, user.id, {
+                            addToCart(accessToken!, user?.id ?? "", {
                               product_id: product.id,
                               quantity: 1,
                             })
@@ -197,7 +276,7 @@ export default function ProductCardComponent({ product }: ProductProps) {
           variant="ghost"
           className="hover:text-[#a8b324] hover:bg-white hover:cursor-pointer"
           onClick={() =>
-            addToCart(accessToken, user.id, {
+            addToCart(accessToken!, user?.id ?? "", {
               product_id: product.id,
               quantity: 1,
             })

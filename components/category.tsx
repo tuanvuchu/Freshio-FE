@@ -35,7 +35,7 @@ export default function Category({ title, url, url_api }: CategoryProps) {
       setCategories(data);
     };
     load();
-  }, []);
+  }, [url_api]);
 
   return (
     <div className="my-10">

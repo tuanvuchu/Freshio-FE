@@ -13,9 +13,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { use, useEffect, useRef, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import ProductCardComponent, { addToCart } from "@/components/product-card";
+import ProductCardComponent, {
+  addToCart,
+  addToWishlist,
+} from "@/components/product-card";
 import { ProductCard } from "@/types/product-card";
-import { Product } from "@/types/produtc";
+import { Product } from "@/types/product";
 import { FormatCurrency } from "@/hooks/format-currency";
 import Slug from "@/hooks/slug";
 import { useUser } from "@/context/user-context";
@@ -186,7 +189,7 @@ export default function Page({
                       type="submit"
                       className="bg-yellow-600 hover:cursor-pointer hover:bg-yellow-900"
                       onClick={() =>
-                        addToCart(accessToken, user.id, {
+                        addToCart(accessToken!, user?.id ?? "", {
                           product_id: a.id,
                           quantity: 1,
                         })
@@ -208,6 +211,11 @@ export default function Page({
                     So sánh
                   </Button>
                   <Button
+                    onClick={() =>
+                      addToWishlist(accessToken!, user?.id ?? "", {
+                        product_id: a.id,
+                      })
+                    }
                     variant="ghost"
                     className="freshio-icon-heart hover:bg-white hover:cursor-pointer hover:text-yellow-500"
                   >
@@ -232,31 +240,25 @@ export default function Page({
                 </p>
               </div>
             </div>
-            <div className="flex justify-center">
-              <Tabs
-                ref={targetRef}
-                defaultValue="description"
-                className="w-[900px]"
-              >
-                <TabsList className="flex justify-center">
-                  <TabsTrigger value="description">Mô tả</TabsTrigger>
-                  <TabsTrigger value="additional_information">
-                    Thông tin bổ sung
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="description" className="text-center">
-                  Sint qui nihil iste quia et aperiam et. Sed nisi ut eius
-                  accusantium nobis architecto earum a. Molestias laborum qui
-                  quia rerum officiis in dignissimos.
-                </TabsContent>
-                <TabsContent
-                  value="additional_information"
-                  className="text-center"
-                >
-                  Blue, Dark, Gray, Green, Orange, Purple, Red, White, Yellow
-                </TabsContent>
-              </Tabs>
-            </div>
+            <Tabs
+              ref={targetRef}
+              defaultValue="description"
+              className=" items-center"
+            >
+              <TabsList className="flex justify-center">
+                <TabsTrigger value="description">Mô tả</TabsTrigger>
+                <TabsTrigger value="additional_information">
+                  Thông tin bổ sung
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent className="w-5/6" value="description">
+                {a.description}
+              </TabsContent>
+              <TabsContent className="w-5/6" value="additional_information">
+                <p> Trọng lượng: {a.additional_information.weight}</p>
+                <p>Đơn vị: {a.unit}</p>
+              </TabsContent>
+            </Tabs>
             <div>
               <div className="flex items-center gap-4">
                 <Separator className="flex-1" />
@@ -290,15 +292,15 @@ export default function Page({
               </div>
             </div>
             {showHeader && (
-              <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow px-4 py-2">
+              <div className="fixed top-0 left-0 right-0 z-50 bg-white shadow px-4 py-2 ">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-4">
                     <div className="border">
                       <Image
-                        alt="gg"
+                        alt={a.name}
                         src={`${process.env.NEXT_PUBLIC_API_URL}/${a.image}`}
-                        width={60}
-                        height={60}
+                        width={75}
+                        height={75}
                       />
                     </div>
                     <div>
@@ -313,7 +315,7 @@ export default function Page({
                       type="submit"
                       className="bg-yellow-600 hover:bg-yellow-900"
                       onClick={() =>
-                        addToCart(accessToken, user.id, {
+                        addToCart(accessToken!, user?.id ?? "", {
                           product_id: a.id,
                           quantity: 1,
                         })

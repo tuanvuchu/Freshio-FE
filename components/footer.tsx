@@ -23,16 +23,24 @@ export default function Footer() {
             <p>Theo dõi chúng tôi</p>
             <div className="grid grid-cols-4">
               <div>
-                <Link href="/" className="freshio-icon-facebook"></Link>
+                <Link
+                  href="https://www.facebook.com/61556175633114"
+                  target="_blank"
+                  className="freshio-icon-facebook"
+                ></Link>
               </div>
               <div>
-                <Link href="/" className="freshio-icon-youtube"></Link>
+                <Link
+                  href="https://www.youtube.com/channel/UComM7K5n3pIS2H9o1IT0tTw"
+                  target="_blank"
+                  className="freshio-icon-youtube"
+                ></Link>
               </div>
               <div className="col-start-4 row-start-1">
-                <Link href="/" className="freshio-icon-twitter"></Link>
+                <Link href="#" className="freshio-icon-twitter"></Link>
               </div>
               <div className="col-start-3 row-start-1">
-                <Link href="/" className="freshio-icon-instagram"></Link>
+                <Link href="#" className="freshio-icon-instagram"></Link>
               </div>
             </div>
           </div>

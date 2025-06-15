@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useState } from "react";
 import { useUser } from "@/context/user-context";
+import { toast } from "sonner";
 
 type UserFormProps = {
   url: string;
@@ -62,18 +63,19 @@ export default function UserForm({ url, user }: UserFormProps) {
         },
         body: JSON.stringify(data),
       });
-
+      form.reset();
+      toast("Thành công");
       const result = await res.json();
       if (url.includes("/create")) {
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`, {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/roles`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            category_id: "782db175-3ac0-43cb-84e9-4bbfd2e5a8c3",
-            product_id: result.id,
+            role_id: "6b3af5f4-19c4-4623-a116-bdea182e904d",
+            user_id: result.id,
           }),
         });
       }
@@ -121,7 +123,7 @@ export default function UserForm({ url, user }: UserFormProps) {
                 setImageUrl(result.filePath);
                 form.setValue("image", result.filePath);
               } catch (error) {
-                console.log(error);
+                console.error(error);
               }
             }}
           />

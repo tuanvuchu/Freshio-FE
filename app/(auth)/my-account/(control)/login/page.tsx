@@ -43,9 +43,6 @@ export default function Login() {
         };
         localStorage.setItem("auth", JSON.stringify(data));
         router.back();
-        // todo
-      } else if (res.status === 401) {
-      } else {
       }
     } catch (error) {
       console.error(error);

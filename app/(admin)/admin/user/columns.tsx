@@ -22,9 +22,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
-import { DataTableColumnHeader } from "../components/data-table-column-header";
 import Image from "next/image";
 import UserForm from "./user-form";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 
 export type User = {
   id: string;

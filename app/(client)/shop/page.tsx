@@ -23,7 +23,7 @@ import {
 import ProductCardComponent from "@/components/product-card";
 import { ProductCard } from "@/types/product-card";
 import { FormatCurrency } from "@/hooks/format-currency";
-import BlogCategory from "@/components/category";
+import ProductCategory from "@/components/category";
 import BlogTag from "@/components/tag";
 
 type Product = {
@@ -66,6 +66,7 @@ async function getProduct(
     return res.json();
   } catch (error) {
     console.error(error);
+    throw error;
   }
 }
 
@@ -108,7 +109,7 @@ export default function Shop() {
         <div className="col-span-2">
           <div className="grid">
             <div className="mb-11">
-              <BlogCategory
+              <ProductCategory
                 title="Thẻ sản phẩm"
                 url="shop/category"
                 url_api="products"

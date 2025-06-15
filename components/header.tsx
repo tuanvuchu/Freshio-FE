@@ -24,38 +24,58 @@ import { Avatar, AvatarImage } from "./ui/avatar";
 import { useUser } from "@/context/user-context";
 import { useEffect, useState } from "react";
 
-export async function cartCount(user_id: string, accessToken: string) {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/carts/?user_id=${user_id}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.log(error);
-  }
-}
-
 export default function Header() {
   const { user, accessToken, setUser } = useUser();
   const [count, setCount] = useState<number>(0);
+  const [count1, setCount1] = useState<number>(0);
+
+  async function cartCount(user_id?: string, accessToken?: string) {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/carts/?user_id=${user_id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const data = await res.json();
+      setCount(data.count);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function wishlistCount(user_id?: string, accessToken?: string) {
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/wishlists/?user_id=${user_id}`,
+        {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const data = await res.json();
+      setCount1(data.count);
+    } catch (error) {
+      console.error(error);
+    }
+  }
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const data = await cartCount(user?.id, accessToken);
-        setCount(data.count);
+        await cartCount(user?.id, accessToken!);
+        await wishlistCount(user?.id, accessToken!);
       } catch (error) {
         console.error(error);
       }
     };
-    if (user?.id && accessToken) {
+    if (accessToken) {
       fetchCart();
     }
   }, [user, accessToken]);
@@ -113,8 +133,7 @@ export default function Header() {
                       className="hover:cursor-pointer"
                       onClick={() => {
                         setUser(null);
-                        localStorage.removeItem("user");
-                        localStorage.removeItem("access_token");
+                        localStorage.removeItem("auth");
                       }}
                     >
                       Đăng xuất
@@ -138,7 +157,7 @@ export default function Header() {
               >
                 <div className="relative">
                   <span className="absolute -top-10 -right-4 bg-[#dfb178] text-white text-xs rounded-full size-5 flex items-center justify-center">
-                    0
+                    {count1}
                   </span>
                 </div>
               </Button>

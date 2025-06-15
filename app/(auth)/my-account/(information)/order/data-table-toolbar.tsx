@@ -11,9 +11,8 @@ import { X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-import { DataTableFacetedFilter } from "../../../../components/data-table/data-table-faceted-filter";
-import { DataTableViewOptions } from "../../../../components/data-table/data-table-view-options";
+import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter";
+import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -54,10 +53,12 @@ export function DataTableToolbar<TData>({
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
         <Input
-          placeholder="ID..."
-          value={(table.getColumn("user_id")?.getFilterValue() as string) ?? ""}
+          placeholder="Ngày..."
+          value={
+            (table.getColumn("created_at")?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
-            table.getColumn("user_id")?.setFilterValue(event.target.value)
+            table.getColumn("created_at")?.setFilterValue(event.target.value)
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />

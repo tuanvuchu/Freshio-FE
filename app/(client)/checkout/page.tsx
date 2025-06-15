@@ -1,5 +1,4 @@
 "use client";
-import type { Metadata } from "next";
 import CheckoutForm from "./checkout-form";
 import {
   Accordion,
@@ -25,14 +24,25 @@ import { useEffect, useState } from "react";
 import { useUser } from "@/context/user-context";
 import { FormatCurrency } from "@/hooks/format-currency";
 
-// export const metadata: Metadata = {
-//   title: "Thanh toán - U Food",
-//   description: "...",
-// };
-
+type CartItems = {
+  id: string;
+  name: string;
+  description: string;
+  additional_information: {
+    weight: string;
+  };
+  price: number;
+  unit: string;
+  quantity: number;
+  image: string;
+  sku: string;
+  slug: string;
+  created_at: string;
+  updated_at: string;
+};
 export default function Checkout() {
   const { user, accessToken } = useUser();
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [cartItems, setCartItems] = useState<CartItems[]>([]);
   const [cartId, setCartId] = useState<string | null>(null);
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "vnpay">("cod");
   const [couponCode, setCouponCode] = useState("");
@@ -100,9 +110,11 @@ export default function Checkout() {
     const total = calculateTotal();
 
     try {
+      if (!user || !cartId) return;
+
       if (paymentMethod === "vnpay") {
         const paymentUrl = await vnPay(total, cartId);
-        window.location.href = paymentUrl;
+        window.location.href = paymentUrl as string;
       } else {
         window.location.href = `/checkout/return?vnp_Amount=${total}&vnp_OrderInfo=Thanh+toan+don+hang+${user.id}&vnp_ResponseCode=00`;
       }

@@ -1,15 +1,16 @@
 "use client";
 import { useUser } from "@/context/user-context";
 import { FormatCurrency } from "@/hooks/format-currency";
+import { Order } from "@/types/order";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function OrderPage() {
-  const { user, accessToken } = useUser();
+  const { accessToken } = useUser();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const [order, setOrder] = useState<any>(null);
+  const [order, setOrder] = useState<Order | null>(null);
   async function getCart(id: string) {
     try {
       const res = await fetch(
@@ -34,13 +35,13 @@ export default function OrderPage() {
     if (id && accessToken) {
       getCart(id);
     }
-  }, [user, accessToken]);
+  }, [id, accessToken]);
 
   return (
     <>
-      <div className=" my-5">
+      <div className="grid grid-cols-2 gap-4">
         {order?.order_items?.map((p, i) => (
-          <div key={i} className="flex pb-5">
+          <div key={i} className="flex gap-2 items-center">
             <Image
               src={`${process.env.NEXT_PUBLIC_API_URL}/${p.products.image}`}
               width={50}
