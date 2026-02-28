@@ -129,7 +129,7 @@ export default function ProductForm({ url, product }: ProductFormProps) {
                   {
                     method: "POST",
                     body: formData,
-                  }
+                  },
                 );
 
                 const result = await res.json();

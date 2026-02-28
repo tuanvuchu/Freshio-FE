@@ -62,7 +62,7 @@ const StatusCell = ({ initialStatus, order }: StatusCellProps) => {
 
   const [open, setOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<Status | null>(
-    statuses.find((s) => s.value === initialStatus) || null
+    statuses.find((s) => s.value === initialStatus) || null,
   );
 
   const updateStatusApi = async (orderId: string, newStatus: string) => {
@@ -76,7 +76,7 @@ const StatusCell = ({ initialStatus, order }: StatusCellProps) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ status: newStatus }),
-        }
+        },
       );
     } catch (error) {
       console.error(error);
@@ -102,7 +102,7 @@ const StatusCell = ({ initialStatus, order }: StatusCellProps) => {
                     onSelect={(value) => {
                       updateStatusApi(order.id, value);
                       setSelectedStatus(
-                        statuses.find((s) => s.value === value) || null
+                        statuses.find((s) => s.value === value) || null,
                       );
                       setOpen(false);
                     }}

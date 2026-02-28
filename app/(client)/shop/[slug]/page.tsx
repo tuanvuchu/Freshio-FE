@@ -29,7 +29,7 @@ async function findBySlug(slug: string) {
       `${process.env.NEXT_PUBLIC_API_URL}/products/slug/${slug}`,
       {
         method: "get",
-      }
+      },
     );
     const data = await res.json();
     return data;

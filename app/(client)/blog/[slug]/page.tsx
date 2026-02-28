@@ -31,7 +31,7 @@ async function getBlogPost(slug: string): Promise<Blog | undefined> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/blogs/get-by-slug?slug=${slug}`,
-      { method: "get" }
+      { method: "get" },
     );
     const data = await res.json();
     return data;
@@ -44,7 +44,7 @@ async function getComment(slug: string): Promise<Comment[] | undefined> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/comments/?slug=${slug}`,
-      { method: "get" }
+      { method: "get" },
     );
     const data = await res.json();
     return data;

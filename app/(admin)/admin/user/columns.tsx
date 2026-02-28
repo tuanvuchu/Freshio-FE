@@ -147,7 +147,7 @@ export const columns: ColumnDef<User>[] = [
                         `${process.env.NEXT_PUBLIC_API_URL}/users/delete/${user.id}`,
                         {
                           method: "delete",
-                        }
+                        },
                       );
                     } catch (error) {
                       console.error(error);

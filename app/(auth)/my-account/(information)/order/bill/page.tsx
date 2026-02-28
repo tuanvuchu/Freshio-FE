@@ -35,7 +35,7 @@ export default function Page() {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
               },
-            }
+            },
           );
           const data = await res.json();
           setOrder(data);

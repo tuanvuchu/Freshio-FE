@@ -39,7 +39,7 @@ export default function Header() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
       const data = await res.json();
       setCount(data.count);
@@ -58,7 +58,7 @@ export default function Header() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
       const data = await res.json();
       setCount1(data.count);

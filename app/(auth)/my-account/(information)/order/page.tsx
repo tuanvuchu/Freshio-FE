@@ -21,7 +21,7 @@ export default function SettingsAccountPage() {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
-          }
+          },
         );
         const data = await res.json();
         setOrder(data);

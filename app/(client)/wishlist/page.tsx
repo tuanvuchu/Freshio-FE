@@ -46,7 +46,7 @@ export default function Wishlist() {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
       const data = await res.json();
       if (res.status === 200) {
@@ -68,11 +68,11 @@ export default function Wishlist() {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       if (res.status === 200) {
         setWishlistItems(
-          wishlistItems.filter((item) => item.id !== product_id)
+          wishlistItems.filter((item) => item.id !== product_id),
         );
       }
     } catch (error) {

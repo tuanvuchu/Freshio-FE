@@ -26,7 +26,7 @@ async function getCarosel(tag: string): Promise<ProductCard[]> {
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     return response.json();
   } catch (error) {

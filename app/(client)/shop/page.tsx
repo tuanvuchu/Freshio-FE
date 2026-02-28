@@ -54,14 +54,14 @@ async function getProduct(
   current: number,
   minPrice?: number,
   maxPrice?: number,
-  orderBy?: string
+  orderBy?: string,
 ): Promise<Product> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/products/get?current=${current}&min_price=${minPrice}&max_price=${maxPrice}&orderby=${orderBy}`,
       {
         method: "GET",
-      }
+      },
     );
     return res.json();
   } catch (error) {
@@ -87,7 +87,7 @@ export default function Shop() {
           currentPage,
           filterMinPrice,
           filterMaxPrice,
-          orderBy
+          orderBy,
         );
         setProducts(data);
         setTotalPages(data.totalPages);
@@ -219,7 +219,7 @@ export default function Shop() {
                         {page}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
                 <PaginationItem>
                   <PaginationNext

@@ -55,14 +55,14 @@ async function getProduct(
   category?: string,
   minPrice?: number,
   maxPrice?: number,
-  orderBy?: string
+  orderBy?: string,
 ): Promise<Product> {
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/products/get?current=${current}&min_price=${minPrice}&max_price=${maxPrice}&orderby=${orderBy}&category=${category}`,
       {
         method: "GET",
-      }
+      },
     );
     return res.json();
   } catch (error) {
@@ -94,7 +94,7 @@ export default function Page({
           slug,
           filterMinPrice,
           filterMaxPrice,
-          orderBy
+          orderBy,
         );
         setProducts(data);
         setTotalPages(data.totalPages);
@@ -226,7 +226,7 @@ export default function Page({
                         {page}
                       </PaginationLink>
                     </PaginationItem>
-                  )
+                  ),
                 )}
                 <PaginationItem>
                   <PaginationNext

@@ -17,7 +17,7 @@ type CategoryProps = {
 async function getCategories(url: string): Promise<Category[]> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/${url}/categories`
+      `${process.env.NEXT_PUBLIC_API_URL}/${url}/categories`,
     );
     const data: Category[] = await res.json();
     return data;

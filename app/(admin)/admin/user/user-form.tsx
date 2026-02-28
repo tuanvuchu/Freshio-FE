@@ -116,7 +116,7 @@ export default function UserForm({ url, user }: UserFormProps) {
                   {
                     method: "POST",
                     body: formData,
-                  }
+                  },
                 );
 
                 const result = await res.json();

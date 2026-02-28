@@ -20,10 +20,10 @@ async function getData(): Promise<StatData[]> {
   const res = await Promise.all(
     urls.map(async (endpoint) => {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/statistics/${endpoint}`
+        `${process.env.NEXT_PUBLIC_API_URL}/statistics/${endpoint}`,
       );
       return res.json();
-    })
+    }),
   );
 
   return res;

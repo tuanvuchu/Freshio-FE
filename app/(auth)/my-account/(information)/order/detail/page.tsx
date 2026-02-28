@@ -20,7 +20,7 @@ export default function OrderPage() {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
       const data = await res.json();
       if (res.status === 200) {

@@ -19,7 +19,7 @@ export default function User() {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       const data = await res.json();
       setData(data);

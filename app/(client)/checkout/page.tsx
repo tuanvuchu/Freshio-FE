@@ -56,7 +56,7 @@ export default function Checkout() {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
       const data = await res.json();
       if (res.status === 200) {
@@ -82,7 +82,7 @@ export default function Checkout() {
             amount: amount,
             info: info,
           }),
-        }
+        },
       );
 
       const data = await res.text();
@@ -95,7 +95,7 @@ export default function Checkout() {
   const calculateTotal = () => {
     return cartItems.reduce(
       (total, item) => total + item.price * item.quantity,
-      0
+      0,
     );
   };
 

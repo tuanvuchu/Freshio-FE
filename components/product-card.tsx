@@ -49,7 +49,7 @@ interface AddWishlistItemDto {
 export async function addToCart(
   accessToken: string,
   user_id: string,
-  item: AddCartItemDto
+  item: AddCartItemDto,
 ): Promise<void> {
   try {
     const resCarts = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/carts`, {
@@ -69,7 +69,7 @@ export async function addToCart(
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({ user_id }),
-        }
+        },
       );
 
       if (!resCreate.ok) throw new Error("Không thể tạo giỏ hàng");
@@ -87,7 +87,7 @@ export async function addToCart(
           product_id: item.product_id,
           quantity: item.quantity,
         }),
-      }
+      },
     );
     if (!resAddItem.ok) throw new Error("Không thể thêm sản phẩm vào giỏ");
     toast("Đã thêm");
@@ -99,7 +99,7 @@ export async function addToCart(
 export async function addToWishlist(
   accessToken: string,
   user_id: string,
-  item: AddWishlistItemDto
+  item: AddWishlistItemDto,
 ): Promise<void> {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/wishlists`, {
@@ -119,7 +119,7 @@ export async function addToWishlist(
             Authorization: `Bearer ${accessToken}`,
           },
           body: JSON.stringify({ user_id }),
-        }
+        },
       );
 
       if (!resCreate.ok) throw new Error("Không thể tạo giỏ hàng");
@@ -137,7 +137,7 @@ export async function addToWishlist(
           wishlist_id: item.wishlist_id,
           product_id: item.product_id,
         }),
-      }
+      },
     );
     if (!resAddItem.ok) throw new Error("Không thể thêm sản phẩm vào giỏ");
     toast("Đã thêm");

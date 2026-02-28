@@ -19,7 +19,7 @@ export default function OrderDetail({ id }: { id: string }) {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
       const data = await res.json();
       return data;

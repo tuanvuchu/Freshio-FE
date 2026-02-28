@@ -68,7 +68,7 @@ export default function Cart() {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
-        }
+        },
       );
       const data = await res.json();
       if (res.status === 200) {
@@ -90,7 +90,7 @@ export default function Cart() {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
-        }
+        },
       );
       if (res.status === 200) {
         setCartItems(cartItems.filter((item) => item.id !== product_id));
@@ -103,7 +103,7 @@ export default function Cart() {
   async function updateQuantity(
     cart_id: string,
     product_id: string,
-    quantity: number
+    quantity: number,
   ) {
     try {
       const res = await fetch(
@@ -115,13 +115,13 @@ export default function Cart() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ quantity }),
-        }
+        },
       );
       if (res.status === 200) {
         setCartItems(
           cartItems.map((item) =>
-            item.id === product_id ? { ...item, quantity } : item
-          )
+            item.id === product_id ? { ...item, quantity } : item,
+          ),
         );
       }
     } catch (error) {
@@ -301,8 +301,8 @@ export default function Cart() {
                   {FormatCurrency(
                     cartItems.reduce(
                       (total, item) => total + item.price * item.quantity,
-                      0
-                    )
+                      0,
+                    ),
                   )}
                 </p>
               </div>
@@ -313,8 +313,8 @@ export default function Cart() {
                   {FormatCurrency(
                     cartItems.reduce(
                       (total, item) => total + item.price * item.quantity,
-                      0
-                    )
+                      0,
+                    ),
                   )}
                 </p>
               </div>

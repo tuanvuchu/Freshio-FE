@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 async function blogRecent(): Promise<Blog[]> {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/blogs/get-recent`
+      `${process.env.NEXT_PUBLIC_API_URL}/blogs/get-recent`,
     );
     if (!res.ok) {
       throw new Error(`${res.status} ${res.statusText}`);

@@ -39,7 +39,7 @@ async function getBlogs(current: number, slug: string): Promise<BlogData> {
       `${process.env.NEXT_PUBLIC_API_URL}/blogs/get-all?current=${current}&pageSize=10&category=${slug}`,
       {
         method: "get",
-      }
+      },
     );
     return response.json();
   } catch (error) {
@@ -185,7 +185,7 @@ export default function Page({
                       {page}
                     </PaginationLink>
                   </PaginationItem>
-                )
+                ),
               )}
               {totalPages > 3 && <PaginationEllipsis />}
               <PaginationItem>
